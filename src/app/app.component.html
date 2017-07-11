@@ -1,0 +1,6 @@
+<h1>The List</h1>
+<ul>
+  <li class="text" *ngFor="let item of items | async">
+    {{item.id}} - {{item.name}}
+  </li>
+</ul>
