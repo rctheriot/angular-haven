@@ -1,6 +1,11 @@
-<h1>The List</h1>
-<ul>
-  <li class="text" *ngFor="let item of items | async">
-    {{item.id}} - {{item.name}}
-  </li>
-</ul>
+<app-header></app-header>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

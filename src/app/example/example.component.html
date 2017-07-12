@@ -1,0 +1,8 @@
+<div class="row">
+  <div class="col-sm-6 vcenter">
+    <app-d3barchart *ngIf="data" [chartData]="data"></app-d3barchart>
+  </div>
+  <div class="col-sm-6 vcenter">
+    <app-table *ngIf="data" [tableData]="data"></app-table>
+  </div>
+</div>
