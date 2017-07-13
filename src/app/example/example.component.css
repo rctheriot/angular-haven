@@ -1,0 +1,132 @@
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+.container-fluid {
+  padding-top: 60px;
+  padding-bottom:60px;
+}
+
+/*
+ * Global add-ons
+ */
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+  border: 0;
+}
+
+/*
+ * Sidebar
+ */
+.sidebar {
+    position: fixed;
+    top: 30px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+    width: 250px;
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 50px;
+  margin-left: -20px;
+}
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-bottom: 5px;
+}
+.active > a{
+  color: white;
+  background-color: steelblue;
+}
+.solar.active > a {
+  color: white;
+  background-color: #e2b02e;
+}
+.wind.active > a {
+  color: white;
+  background-color: #9757bc;
+}
+.hydro.active > a {
+  color: white;
+  background-color: #31bc98;
+}
+.bio.active > a {
+  color: white;
+  background-color: #409228;
+}
+.oil.active > a {
+  color: white;
+  background-color: #cd4325;
+}
+.oil.active > a {
+  color: white;
+  background-color: #cd4325;
+}
+
+
+
+/*
+ * Main content
+ */
+.main  {
+  margin-left: 300px;
+}
+/*
+ * Placeholder dashboard ideas
+ */
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+
+.topimg {
+  background: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.3),
+      rgba(0, 0, 0, 0.3)
+    ),
+    url(https://cdn.pixabay.com/photo/2015/09/09/17/46/windmill-932125_960_720.jpg);
+  background-size: cover;
+  width: 100px;
+  height: 100px;
+  position: relative;
+  border-radius: 50%;
+  display: inline-block;
+}
+.topimg h1 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 4rem;
+  transform: translate(-50%, -50%);
+}

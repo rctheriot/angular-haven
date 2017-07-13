@@ -1,4 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
@@ -12,6 +14,8 @@ import { HomeComponent } from './home/home.component';
 import { TableComponent } from './shared/table/table.component';
 import { D3barchartComponent } from './shared/d3barchart/d3barchart.component';
 import { ExampleComponent } from './example/example.component';
+import { NgxchartComponent } from './ngxchart/ngxchart.component';
+import { NgxguageComponent } from './ngxguage/ngxguage.component';
 
 @NgModule({
   declarations: [
@@ -21,10 +25,14 @@ import { ExampleComponent } from './example/example.component';
     HomeComponent,
     TableComponent,
     D3barchartComponent,
-    ExampleComponent
+    ExampleComponent,
+    NgxchartComponent,
+    NgxguageComponent
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
+    NgxChartsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     RouterModule.forRoot([
@@ -37,7 +45,7 @@ import { ExampleComponent } from './example/example.component';
         component: ExampleComponent
       },
       {
-        path: '*',
+        path: '',
         component: HomeComponent
       }
     ])

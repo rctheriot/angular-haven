@@ -1,8 +1,73 @@
-<div class="row">
-  <div class="col-sm-6 vcenter">
-    <app-d3barchart *ngIf="data" [chartData]="data"></app-d3barchart>
-  </div>
-  <div class="col-sm-6 vcenter">
-    <app-table *ngIf="data" [tableData]="data"></app-table>
+<div class="container-fluid">
+
+  <div class="row">
+
+    <div class="col-md-2 sidebar">
+      <ul class="nav nav-sidebar">
+        <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">Add Scenario</a></li>
+        <li><a href="#">Analytics</a></li>
+        <li><a href="#">Export</a></li>
+      </ul>
+      <ul class="nav nav-sidebar">
+        <li class="solar" [ngClass]="{'active': solarActive }" (click)="solarClicked()"><a>Solar</a></li>
+        <li class="wind" [ngClass]="{'active': windActive }" (click)="windClicked()"><a>Wind</a></li>
+        <li class="hydro" [ngClass]="{'active': hydroActive }" (click)="hydroClicked()"><a>Hydro</a></li>
+        <li class="bio" [ngClass]="{'active': bioActive }" (click)="bioClicked()"><a>Bio</a></li>
+        <li class="oil" [ngClass]="{'active': oilActive }" (click)="oilClicked()"><a>Oil</a></li>
+      </ul>
+      <ul class="nav nav-sidebar">
+        <li class="curtailment" [ngClass]="{'active': curtActive }" (click)="curtClicked()"><a>Curtailment</a></li>
+        <li class="generation" [ngClass]="{'active': geneActive }" (click)="geneClicked()"><a>Generation</a></li>
+        <li class="storage" [ngClass]="{'active': storActive }" (click)="storClicked()"><a>Storage</a></li>
+        <li class="landuse" [ngClass]="{'active': landActive }" (click)="landClicked()"><a>LandUse</a></li>
+      </ul>
+    </div>
+
+    <div class="col-md-10 offset-md-2 main">
+
+      <h1 class="page-header">PSIP Scenarios</h1>
+      <div class="row placeholders">
+
+        <div class="col-sm-6 placeholder">
+          <div class="topimg">
+            <h1>1</h1>
+          </div>
+          <h3>Scenario E3</h3>
+          <div class="row">
+            <div class="col-sm-10 offset-sm-2">
+              <app-ngxchart></app-ngxchart>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-10 offset-sm-2">
+              <app-ngxguage></app-ngxguage>
+        </div>
+            </div>
+          </div>
+
+        <div class="col-sm-6 placeholder">
+          <div class="row topimg">
+            <h1>2</h1>
+          </div>
+          <h3>Scenario E3-2</h3>
+          <div class="row">
+            <div class="col-sm-10 offset-sm-2">
+              <app-ngxchart></app-ngxchart>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-10 offset-sm-2">
+              <app-ngxguage></app-ngxguage>
+            </div>
+          </div>
+
+  <app-table [tableData]="data" ></app-table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
