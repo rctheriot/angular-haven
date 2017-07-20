@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {single} from '../shared/data';
+import {single} from '../../shared/data';
 
 @Component({
   selector: 'app-ngxguage',

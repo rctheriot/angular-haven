@@ -7,7 +7,7 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit {
-  @Input() private tableData: Array<any>;
+  @Input() private data: Array<any>;
 
   constructor() {
   }
