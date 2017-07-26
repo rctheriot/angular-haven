@@ -1,0 +1,22 @@
+.row {
+  position: absolute;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+}
+
+.example-card {
+  width: 350px;
+}
+
+.login-button {
+  width: 100%;
+  background-color: steelblue;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.input-field {
+  width: 100%;
+}
