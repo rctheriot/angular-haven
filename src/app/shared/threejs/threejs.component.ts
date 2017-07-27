@@ -1,7 +1,6 @@
 import { Component, AfterViewInit, ViewChild, ElementRef, Input } from '@angular/core';
 import * as THREE from 'three';
 import * as _ from 'underscore';
-import * as d3 from 'd3';
 
 declare const require: (moduleId: string) => any;
 const OrbitControls = require('three-orbit-controls')(THREE)
@@ -45,8 +44,8 @@ export class ThreejsComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
-    this.createGraph();
-    this.createGrid()
+    //this.createGraph();
+    //this.createGrid()
     this.startRenderingLoop();
   }
 
@@ -157,7 +156,6 @@ export class ThreejsComponent implements AfterViewInit {
 
     // grid lines
     for (let i = 0; i < _.size(yLines); i++) {
-
       const graphLine = new THREE.Line(yLines[i], lineMat);
 
       graphLine.rotation.x = -Math.PI / 2;
@@ -168,7 +166,6 @@ export class ThreejsComponent implements AfterViewInit {
       this.scene.add(graphLine);
     }
     for (let i = 0; i < _.size(xLines); i++) {
-      
       const graphLine = new THREE.Line(xLines[i], lineMat);
 
       graphLine.rotation.x = -Math.PI / 2;
