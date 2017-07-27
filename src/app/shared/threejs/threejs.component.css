@@ -1,6 +1,4 @@
-.threejsBlockScene{
-  width: 350px;
-  height: 175px;
-  margin: auto;
-  display: block;
+.hat {
+  height: 200px;
+  width: 200px;
 }

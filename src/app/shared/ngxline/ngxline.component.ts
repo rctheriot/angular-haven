@@ -25,11 +25,9 @@ export class NgxlineComponent  {
   @Input() public data: Array<any>;
 
   constructor() {
-
   }
 
   remove(event) {
-    console.log(event);
   }
 
 }

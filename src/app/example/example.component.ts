@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 
 
@@ -7,22 +7,23 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
   templateUrl: './example.component.html',
   styleUrls: ['./example.component.css']
 })
-export class ExampleComponent implements OnInit, OnChanges {
+export class ExampleComponent implements OnInit {
 
   dataObs: FirebaseListObservable<any[]>;
   parent: FirebaseListObservable<any[]>;
+  threeObs: FirebaseListObservable<any[]>;
+
   tableData: any[] = [];
   chartData: any[] = [{ name: 'Load', series: [] }];
+  threeData: any[] = [];
+  loaded: boolean;
 
   constructor(private db: AngularFireDatabase) {
+    this.loaded = false;
   }
 
   ngOnInit() {
     this.getData({ year: 2016, month: 1, day: 1 });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-
   }
 
   getData(data) {
@@ -36,7 +37,21 @@ export class ExampleComponent implements OnInit, OnChanges {
         this.tableData.push({ name: snapshot.key, value: snapshot.val() });
       });
     })
+
+     //THREEJS
+    this.threeObs = this.db.list(`/test-items/`, { preserveSnapshot: true });
+    this.threeObs.subscribe(snapshots => {
+      snapshots.forEach(snapshot => {
+          const day = [];
+          snapshot.forEach(snap => {
+            day.push({value: snap.val()})
+          })
+          this.threeData.push(day);
+      })
+      this.loaded = true;
+    })
   }
+
 
 
   addData(data) {
