@@ -39,17 +39,17 @@ export class ExampleComponent implements OnInit {
     })
 
      //THREEJS
-    this.threeObs = this.db.list(`/test-items/`, { preserveSnapshot: true });
-    this.threeObs.subscribe(snapshots => {
-      snapshots.forEach(snapshot => {
-          const day = [];
-          snapshot.forEach(snap => {
-            day.push({value: snap.val()})
-          })
-          this.threeData.push(day);
-      })
-      this.loaded = true;
-    })
+    // this.threeObs = this.db.list(`/test-items/`, { preserveSnapshot: true });
+    // this.threeObs.subscribe(snapshots => {
+    //   snapshots.forEach(snapshot => {
+    //       const day = [];
+    //       snapshot.forEach(snap => {
+    //         day.push({value: snap.val()})
+    //       })
+    //       this.threeData.push(day);
+    //   })
+    //   //this.loaded = true;
+    // })
   }
 
 

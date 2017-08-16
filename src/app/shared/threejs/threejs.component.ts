@@ -42,11 +42,11 @@ export class ThreejsComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.createScene();
-    this.createCamera();
-    //this.createGraph();
-    //this.createGrid()
-    this.startRenderingLoop();
+    // this.createScene();
+    // this.createCamera();
+    // this.createGraph();
+    // this.createGrid()
+    // this.startRenderingLoop();
   }
 
   private createScene() {

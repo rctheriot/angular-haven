@@ -1,79 +1,76 @@
-
-
-export const multi = [
+export const polarData = [
   {
-    'name': 'Load',
+    'name': 'Generation',
     'series': [
       {
-        'name': '2010',
-        'value': 7300000
+        'name': 'Oil',
+        'value': 500
       },
       {
-        'name': '2011',
-        'value': 8940000
+        'name': 'Water',
+        'value': 300
       },
       {
-        'name': '2012',
-        'value': 7940000
+        'name': 'Solar',
+        'value': 400
       },
       {
-        'name': '2013',
-        'value': 8340000
+        'name': 'Wind',
+        'value': 400
       },
       {
-        'name': '2014',
-        'value': 9504000
+        'name': 'Bio',
+        'value': 200
       }
     ]
   },
   {
-    'name': 'USA',
+    'name': 'Curtailment',
     'series': [
       {
-        'name': '2010',
-        'value': 7870000
+        'name': 'Oil',
+        'value': 300
       },
       {
-        'name': '2011',
-        'value': 8270000
+        'name': 'Water',
+        'value': 200
       },
       {
-        'name': '2012',
-        'value': 8340000
+        'name': 'Solar',
+        'value': 250
       },
       {
-        'name': '2013',
-        'value': 8940000
+        'name': 'Wind',
+        'value': 200
       },
       {
-        'name': '2014',
-        'value': 9940000
+        'name': 'Bio',
+        'value': 100
       }
     ]
   },
-
   {
-    'name': 'France',
+    'name': 'Storage',
     'series': [
       {
-        'name': '2010',
-        'value': 5000002
+        'name': 'Oil',
+        'value': 135
       },
       {
-        'name': '2011',
-        'value': 5800000
+        'name': 'Water',
+        'value': 200
       },
       {
-        'name': '2012',
-        'value': 6340000
+        'name': 'Solar',
+        'value': 100
       },
       {
-        'name': '2013',
-        'value': 7340000
+        'name': 'Wind',
+        'value': 100
       },
       {
-        'name': '2014',
-        'value': 7940000
+        'name': 'Bio',
+        'value': 100
       }
     ]
   }

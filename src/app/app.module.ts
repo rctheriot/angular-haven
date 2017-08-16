@@ -28,6 +28,7 @@ import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
 import { GmapComponent } from './shared/gmap/gmap.component';
 import { ThreejsComponent } from './shared/threejs/threejs.component';
+import { NgxradarComponent } from './shared/ngxradar/ngxradar.component';
 
 @NgModule({
   imports: [
@@ -58,6 +59,7 @@ import { ThreejsComponent } from './shared/threejs/threejs.component';
     HomeComponent,
     GmapComponent,
     ThreejsComponent,
+    NgxradarComponent,
   ],
   providers: [AuthService, AuthGuard],
   bootstrap: [AppComponent]
