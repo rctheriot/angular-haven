@@ -38,7 +38,7 @@ export class ExampleComponent implements OnInit {
       });
     })
 
-     //THREEJS
+    // THREEJS
     // this.threeObs = this.db.list(`/test-items/`, { preserveSnapshot: true });
     // this.threeObs.subscribe(snapshots => {
     //   snapshots.forEach(snapshot => {
@@ -48,11 +48,9 @@ export class ExampleComponent implements OnInit {
     //       })
     //       this.threeData.push(day);
     //   })
-    //   //this.loaded = true;
+    //   this.loaded = true;
     // })
   }
-
-
 
   addData(data) {
     this.dataObs = this.db.list(`/oahu-load-e3/${data.year}/${data.month}/${data.day}`, { preserveSnapshot: true });

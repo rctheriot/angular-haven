@@ -17,36 +17,39 @@
           </div>
           <h3>Scenario E3</h3>
           <hr>
-          
-                    <div class="row">
-                      <div class="col-sm-10 offset-sm-2">
-                        <app-ngxline [data]="chartData"></app-ngxline>
-                      </div>
-                    </div>
-                    
-                    <hr>
-          
-                    <div class="row">
-                      <div class="col-sm-10 offset-sm-2">
-                        <app-ngxradar></app-ngxradar>
-                      </div>
-                    </div>
-          
-                    <hr>
-          
-                    <div class="row">
-                      <div class="col-sm-10 offset-sm-2">
-                        <app-ngxguage></app-ngxguage>
-                      </div>
-                    </div>
-          
-                    <div class="row">
-                      <div class="col-sm-10 offset-sm-2">
-                        <app-gmap></app-gmap>
-                      </div>
-                    </div>
-          
-                    <hr>
+
+          <div class="row">
+            <div class="col-sm-10 offset-sm-2">
+              <app-ngxline [data]="chartData"></app-ngxline>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row">
+            <div class="col-sm-10 offset-sm-2">
+              <app-ngxradar></app-ngxradar>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row">
+            <div class="col-sm-10 offset-sm-2">
+              <app-ngxguage></app-ngxguage>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row">
+            <div class="col-sm-10 offset-sm-2">
+              <app-esri-map-v2></app-esri-map-v2>
+            </div>
+          </div>
+
+          <hr>
+
         </div>
 
         <div class="col-sm-6 placeholder">
@@ -77,21 +80,9 @@
               <app-ngxguage></app-ngxguage>
             </div>
           </div>
-
-          <div class="row">
-            <div class="col-sm-10 offset-sm-2">
-              <app-gmap></app-gmap>
-            </div>
-          </div>
-
+          
           <hr>
-
-          <div class="row">
-            <div class="col-sm-10 offset-sm-2">
-              <app-threejs *ngIf="loaded" [data]="threeData"></app-threejs>
-            </div>
-          </div>
-          <hr>
+          
         </div>
 
       </div>
