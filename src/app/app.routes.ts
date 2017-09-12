@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
-import { ExampleComponent } from './example/example.component';
+import { Example2Component } from './example2/example2.component';
 
 import { AuthGuard } from './auth-guard.service';
 
@@ -18,8 +18,8 @@ const router: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: 'example',
-        component: ExampleComponent
+        path: 'example2',
+        component: Example2Component
       },
     ],
   },

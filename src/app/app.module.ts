@@ -12,8 +12,6 @@ import { routes } from './app.routes';
 import { AuthService } from './auth.service'
 import { AuthGuard } from './auth-guard.service';
 import { AgmCoreModule } from '@agm/core';
-import { AngularEsriModule } from 'angular-esri-components';
-import { EsriLoaderService } from 'angular2-esri-loader';
 import { environment } from '../environments/environment';
 import 'hammerjs';
 
@@ -21,17 +19,18 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { TableComponent } from './shared/table/table.component';
-import { ExampleComponent } from './example/example.component';
-import { NgxguageComponent } from './shared/ngxguage/ngxguage.component';
+import { NgxguageComponent } from './shared/ngx/ngxguage/ngxguage.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
-import { NgxlineComponent } from './shared/ngxline/ngxline.component';
+import { NgxlineComponent } from './shared/ngx/ngxline/ngxline.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
-import { GmapComponent } from './shared/gmap/gmap.component';
 import { ThreejsComponent } from './shared/threejs/threejs.component';
-import { NgxradarComponent } from './shared/ngxradar/ngxradar.component';
-import { EsriMapComponent } from './esri-map/esri-map.component';
-import { EsriMapV2Component } from './esri-map-v2/esri-map-v2.component';
+import { NgxradarComponent } from './shared/ngx/ngxradar/ngxradar.component';
+
+import { Example2Component } from './example2/example2.component';
+import { WindowComponent } from './shared/window/window.component';
+import { Arcgis3dMapComponent } from './shared/arcgis/arcgis-3d-map/arcgis-3d-map.component';
+
 
 @NgModule({
   imports: [
@@ -44,7 +43,6 @@ import { EsriMapV2Component } from './esri-map-v2/esri-map-v2.component';
     AngularFireDatabaseModule,
     AngularFireAuthModule,
     MaterialModule,
-    AngularEsriModule,
     routes,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyBKzKeYcswjXCTr0oww5CyaIn86t_VEaKw'
@@ -55,19 +53,18 @@ import { EsriMapV2Component } from './esri-map-v2/esri-map-v2.component';
     HeaderComponent,
     FooterComponent,
     TableComponent,
-    ExampleComponent,
     NgxguageComponent,
     SidebarComponent,
     NgxlineComponent,
     LoginComponent,
     HomeComponent,
-    GmapComponent,
     ThreejsComponent,
     NgxradarComponent,
-    EsriMapComponent,
-    EsriMapV2Component,
+    Example2Component,
+    WindowComponent,
+    Arcgis3dMapComponent,
   ],
-  providers: [AuthService, AuthGuard, EsriLoaderService],
+  providers: [AuthService, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

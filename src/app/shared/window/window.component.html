@@ -1,0 +1,9 @@
+<div #panelDiv class="panel panel-primary resizable">
+  <div #dragBar class="panel-heading">{{ title }} - {{ id }}</div>
+  <div class="panel-body">
+      <app-ngxline *ngIf="type == 'line'" [view]="view"></app-ngxline>
+      <app-ngxradar *ngIf="type == 'radar'" [view]="view"></app-ngxradar>
+      <app-ngxguage *ngIf="type == 'guage'" [view]="view"></app-ngxguage>
+      <app-arcgis-3d-map *ngIf="type == 'map'"></app-arcgis-3d-map>
+  </div>
+</div>

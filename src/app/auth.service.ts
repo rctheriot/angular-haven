@@ -18,7 +18,7 @@ export class AuthService {
               (token: string) => {
                 this.token = token;
                 if (this.token) {
-                  this.router.navigate(['/home/example']);
+                  this.router.navigate(['/home/example2']);
                 }
               }
             )

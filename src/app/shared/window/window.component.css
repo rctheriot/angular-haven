@@ -1,0 +1,14 @@
+.panel {
+  width: 400px;
+  height: 400px;
+  top: 100px;
+  left:100px;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.resizable {
+  overflow: hidden;
+  resize: both
+}
+

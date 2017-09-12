@@ -1,0 +1,15 @@
+<ngx-charts-line-chart *ngIf="loaded"
+  [scheme]="colorScheme"
+  [results]="chartData"
+  [gradient]="gradient"
+  [xAxis]="showXAxis"
+  [yAxis]="showYAxis"
+  [legend]="showLegend"
+  [showXAxisLabel]="showXAxisLabel"
+  [showYAxisLabel]="showYAxisLabel"
+  [xAxisLabel]="xAxisLabel"
+  [yAxisLabel]="yAxisLabel"
+  [autoScale]="autoScale"
+  (select)="remove($event)"
+  [view]="view">
+</ngx-charts-line-chart>

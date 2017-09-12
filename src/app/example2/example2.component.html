@@ -1,0 +1,16 @@
+<div *ngIf="!loaded" class="row">
+  <img class="loading-image" src="../../assets/images/haven-animation.gif">
+</div>
+
+<div *ngIf="loaded" class="home">
+
+  <div *ngFor="let chart of charts">
+    <app-window 
+      [id]="chart.id" 
+      [title]="chart.name" 
+      [type]="chart.type" 
+      [view]="chart.view">
+    </app-window>
+  </div>
+
+</div>
