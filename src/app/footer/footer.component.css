@@ -1,12 +1,25 @@
-.container {
-  margin-top: 50px;
-}
-
-.navbar {
-  background-color: steelblue;
-}
-
 a {
   color: white !important;
   font-weight: bold;
+  font-size: 14px;
+}
+
+.navbar-nav>li>a,
+.navbar-brand {
+  padding-top: 5px !important;
+  padding-bottom: 0 !important;
+  height: 30px;
+}
+
+.navbar {
+  min-height: 30px !important;
+  background-color: rgb(40, 96, 141);
+}
+
+.logo {
+  position: absolute;
+  height: 60px;
+  width: 60px;
+  border-radius: 100%;
+  transform: translate(2%,-52%)
 }

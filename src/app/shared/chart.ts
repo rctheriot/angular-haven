@@ -1,5 +1,5 @@
 export class Chart {
-    id: number;
+    chartid: number;
     name: string;
     type: string;
     view: [number, number];

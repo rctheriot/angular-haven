@@ -1,5 +1,10 @@
-<div #panelDiv class="panel panel-primary resizable">
-  <div #dragBar class="panel-heading">{{ title }} - {{ id }}</div>
+<div #panelDiv class="panel panel-default resizable">
+  <div #dragBar class="panel-heading panel-heading-custom">
+    {{ title }} - {{ chartid }} 
+    <button class="navbarButton" (click)="removeChart()"><span class="glyphicon glyphicon-remove"></span></button>
+    <button class="navbarButton" (click)="incAlpha()"><span class="glyphicon glyphicon-plus"></span></button>
+    <button class="navbarButton" (click)="decAlpha()"><span class="glyphicon glyphicon-minus"></span></button>
+  </div>
   <div class="panel-body">
       <app-ngxline *ngIf="type == 'line'" [view]="view"></app-ngxline>
       <app-ngxradar *ngIf="type == 'radar'" [view]="view"></app-ngxradar>

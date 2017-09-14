@@ -23,6 +23,10 @@ export class Example2Component implements OnInit {
   loaded: boolean;
 
   charts: Chart[];
+  chartTypes = ['line', 'guage',
+  'radar'];
+
+  model = new Chart();
 
   constructor(private db: AngularFireDatabase, private chartService: ChartServiceService) {
     this.loaded = false;
@@ -47,14 +51,14 @@ export class Example2Component implements OnInit {
         this.chartData[0].series.push({ name: snapshot.key, value: snapshot.val() })
         this.tableData.push({ name: snapshot.key, value: snapshot.val() });
       });
-      //setTimeout(() => { this.loaded = true; }, 1000);
-      this.loaded = true;
+      setTimeout(() => { this.loaded = true; }, 1000);
       ;
     })
 
   }
-  public hide() {
-    console.log("hide");
+
+  createChart() {
+    this.chartService.addChart(this.model.name, this.model.type);
   }
 
 

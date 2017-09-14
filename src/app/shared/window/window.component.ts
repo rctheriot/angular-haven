@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, Input, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, Input, ViewChild, Renderer } from '@angular/core';
 import * as $ from 'jquery';
 import { ChartServiceService } from '../../shared/chart-service.service';
 
@@ -15,25 +15,29 @@ export class WindowComponent implements AfterViewInit {
   @ViewChild('dragBar') dragBar;
   @ViewChild('panelDiv') panelDiv;
 
-  @Input() public id: number;
+  @Input() public chartid: number;
   @Input() public title: string;
   @Input() public type: string;
   @Input() public view: [number, number];
 
   winMLocX: number;
   winMLocY: number;
+  backgroundAlpha: number = 0.5;
 
-  constructor(private chartService: ChartServiceService) { }
+
+  constructor(private chartService: ChartServiceService, private _renderer: Renderer) {
+
+  }
 
   ngAfterViewInit() {
 
     WindowComponent.numWindows.push(this.panelDiv.nativeElement);
 
     const mutObs = new MutationObserver(() => this.resize());
-    mutObs.observe(this.panelDiv.nativeElement, {attributes: true});
+    mutObs.observe(this.panelDiv.nativeElement, { attributes: true });
 
-    this.panelDiv.nativeElement.style.width = this.view[0] + 'px';
-    this.panelDiv.nativeElement.style.height = this.view[1] + 'px';
+    //this.panelDiv.nativeElement.style.width = this.view[0] + 'px';
+    //this.panelDiv.nativeElement.style.height = this.view[1] + 'px';
 
     this.dragBar.nativeElement.addEventListener('mousedown', (e) => {
       const mouseX = e.clientX;
@@ -45,19 +49,24 @@ export class WindowComponent implements AfterViewInit {
       WindowComponent.lastClickDiv = this;
       document.addEventListener('mousemove', this.startDragging);
 
-      WindowComponent.numWindows.push(
-        WindowComponent.numWindows.splice(
-          WindowComponent.numWindows.indexOf(this.panelDiv.nativeElement), 1)[0]);
-
-      for (let i = 0; i < WindowComponent.numWindows.length; i++) {
-        WindowComponent.numWindows[i].style.zIndex = i;
-      }
+      this.bringWindowForward();
 
     })
 
     this.dragBar.nativeElement.addEventListener('mouseup', () => { this.stopDragging(); });
     this.panelDiv.nativeElement.addEventListener('onresize', () => { console.log('resize'); });
+    this.panelDiv.nativeElement.addEventListener('mousedown', () => { this.bringWindowForward(); });
 
+  }
+
+  bringWindowForward() {
+    WindowComponent.numWindows.push(
+      WindowComponent.numWindows.splice(
+        WindowComponent.numWindows.indexOf(this.panelDiv.nativeElement), 1)[0]);
+
+    for (let i = 0; i < WindowComponent.numWindows.length; i++) {
+      WindowComponent.numWindows[i].style.zIndex = i;
+    }
   }
 
   startDragging(e) {
@@ -65,8 +74,8 @@ export class WindowComponent implements AfterViewInit {
     const left = e.clientX - container.winMLocX;
     let top = e.clientY - container.winMLocY;
 
-    if (top < 50) { top = 50; }
-    if (top > (window.innerHeight - 100)) { top = window.innerHeight - 100; }
+    if (top < 30) { top = 30; }
+    if (top > (window.innerHeight - 70)) { top = window.innerHeight - 70; }
 
     container.panelDiv.nativeElement.style.left = left + 'px';
     container.panelDiv.nativeElement.style.top = top + 'px';
@@ -80,6 +89,22 @@ export class WindowComponent implements AfterViewInit {
   resize() {
     // this.view[0] = parseInt(this.panelDiv.nativeElement.getBoundingClientRect().left, 10);
     // this.view[1] = parseInt(this.panelDiv.nativeElement.getBoundingClientRect().top, 10);
-    console.log("resize");
   }
+
+  removeChart() {
+    this.chartService.removeChart(this.chartid);
+  }
+
+  incAlpha() {
+    this.backgroundAlpha += 0.05;
+    this.backgroundAlpha = Math.min(this.backgroundAlpha, 1.0);
+    this._renderer.setElementStyle(this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.backgroundAlpha + ')');
+  }
+
+  decAlpha() {
+    this.backgroundAlpha -= 0.05;
+    this.backgroundAlpha = Math.max(this.backgroundAlpha, 0.0);
+    this._renderer.setElementStyle(this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.backgroundAlpha + ')');
+  }
+
 }
