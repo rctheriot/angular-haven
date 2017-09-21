@@ -1,5 +1,4 @@
 import { Component, AfterViewInit, Input, ViewChild, Renderer } from '@angular/core';
-import * as $ from 'jquery';
 import { ChartServiceService } from '../../shared/chart-service.service';
 
 @Component({
@@ -14,6 +13,8 @@ export class WindowComponent implements AfterViewInit {
 
   @ViewChild('dragBar') dragBar;
   @ViewChild('panelDiv') panelDiv;
+  @ViewChild('child') childComponent;
+  @ViewChild('glyphSize') glyphSize;
 
   @Input() public chartid: number;
   @Input() public title: string;
@@ -24,6 +25,14 @@ export class WindowComponent implements AfterViewInit {
   winMLocY: number;
   backgroundAlpha: number = 0.5;
 
+  winXSize: number;
+  winYSize: number;
+
+  saveLeft: number;
+  saveTop: number;
+  saveWidth: number;
+  saveHeight: number;
+  maximized = false;
 
   constructor(private chartService: ChartServiceService, private _renderer: Renderer) {
 
@@ -33,11 +42,13 @@ export class WindowComponent implements AfterViewInit {
 
     WindowComponent.numWindows.push(this.panelDiv.nativeElement);
 
-    const mutObs = new MutationObserver(() => this.resize());
-    mutObs.observe(this.panelDiv.nativeElement, { attributes: true });
+    this.panelDiv.nativeElement.style.width = this.view[0] + 'px';
+    this.panelDiv.nativeElement.style.height = this.view[1] + 'px';
 
-    //this.panelDiv.nativeElement.style.width = this.view[0] + 'px';
-    //this.panelDiv.nativeElement.style.height = this.view[1] + 'px';
+    if (this.childComponent !== undefined) {
+      const mutObs = new MutationObserver(() => this.resize());
+      mutObs.observe(this.panelDiv.nativeElement, { attributes: true });
+    }
 
     this.dragBar.nativeElement.addEventListener('mousedown', (e) => {
       const mouseX = e.clientX;
@@ -53,9 +64,12 @@ export class WindowComponent implements AfterViewInit {
 
     })
 
-    this.dragBar.nativeElement.addEventListener('mouseup', () => { this.stopDragging(); });
-    this.panelDiv.nativeElement.addEventListener('onresize', () => { console.log('resize'); });
+    document.addEventListener('mouseup', () => { this.stopDragging(); });
+    window.addEventListener('resize', () => { this.windowResize() });
     this.panelDiv.nativeElement.addEventListener('mousedown', () => { this.bringWindowForward(); });
+
+    this.panelDiv.nativeElement.style.width = this.view[0];
+    this.panelDiv.nativeElement.style.height = this.view[1];
 
   }
 
@@ -71,11 +85,13 @@ export class WindowComponent implements AfterViewInit {
 
   startDragging(e) {
     const container = WindowComponent.lastClickDiv;
-    const left = e.clientX - container.winMLocX;
+    let left = e.clientX - container.winMLocX;
     let top = e.clientY - container.winMLocY;
 
     if (top < 30) { top = 30; }
     if (top > (window.innerHeight - 70)) { top = window.innerHeight - 70; }
+    if (left < 0) { left = 0; }
+    if (left > (window.innerWidth - 70)) { left = window.innerWidth - 70; }
 
     container.panelDiv.nativeElement.style.left = left + 'px';
     container.panelDiv.nativeElement.style.top = top + 'px';
@@ -87,8 +103,15 @@ export class WindowComponent implements AfterViewInit {
   }
 
   resize() {
-    // this.view[0] = parseInt(this.panelDiv.nativeElement.getBoundingClientRect().left, 10);
-    // this.view[1] = parseInt(this.panelDiv.nativeElement.getBoundingClientRect().top, 10);
+    if (this.winXSize !== this.panelDiv.nativeElement.getBoundingClientRect().width ||
+      this.winYSize !== this.panelDiv.nativeElement.getBoundingClientRect().height) {
+
+      this.winXSize = this.panelDiv.nativeElement.getBoundingClientRect().width;
+      this.winYSize = this.panelDiv.nativeElement.getBoundingClientRect().height;
+      this.childComponent.resize(this.winXSize, this.winYSize);
+    }
+
+
   }
 
   removeChart() {
@@ -105,6 +128,51 @@ export class WindowComponent implements AfterViewInit {
     this.backgroundAlpha -= 0.05;
     this.backgroundAlpha = Math.max(this.backgroundAlpha, 0.0);
     this._renderer.setElementStyle(this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.backgroundAlpha + ')');
+  }
+
+
+  maximize() {
+
+    if (!this.maximized) {
+
+      this.saveLeft = this.panelDiv.nativeElement.style.left;
+      this.saveTop = this.panelDiv.nativeElement.style.top;
+      this.saveWidth = this.panelDiv.nativeElement.getBoundingClientRect().width;
+      this.saveHeight = this.panelDiv.nativeElement.getBoundingClientRect().height;
+
+      this.panelDiv.nativeElement.style.left = 0 + 'px';
+      this.panelDiv.nativeElement.style.top = 30 + 'px';
+      this.panelDiv.nativeElement.style.width = window.innerWidth + 'px';
+      this.panelDiv.nativeElement.style.height = window.innerHeight - 60 + 'px';
+      this._renderer.setElementStyle(this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + 1.0 + ')');
+      this.maximized = true;
+    
+      this.glyphSize.nativeElement.class = 'glyphicon glyphicon-resize-small';
+
+    } else {
+      this.panelDiv.nativeElement.style.left = this.saveLeft;
+      this.panelDiv.nativeElement.style.top = this.saveTop;
+      this.panelDiv.nativeElement.style.width = this.saveWidth + 'px';
+      this.panelDiv.nativeElement.style.height = this.saveHeight + 'px';
+      this._renderer.setElementStyle(this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.backgroundAlpha + ')');
+      this.maximized = false;
+      this.glyphSize.nativeElement.class = 'glyphicon glyphicon-resize-full';
+    }
+  }
+
+  windowResize() {
+
+    let winX = parseInt(this.panelDiv.nativeElement.getBoundingClientRect().left, 10);
+    let winY = parseInt(this.panelDiv.nativeElement.getBoundingClientRect().top, 10);
+
+    if (winY > (window.innerHeight - 70)) { winY = window.innerHeight - 70; }
+    if (winX > (window.innerWidth - 70)) { winX = window.innerWidth - 70; }
+
+    this.panelDiv.nativeElement.style.left = winX + 'px';
+    this.panelDiv.nativeElement.style.top = winY + 'px';
+
+    window.getSelection().removeAllRanges();
+
   }
 
 }

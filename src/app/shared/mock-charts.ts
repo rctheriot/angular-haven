@@ -5,7 +5,7 @@ export const CHARTS: Chart[] = [
         chartid: 1,
         name: 'Line Chart',
         type: 'line',
-        view: [400, 400],
+        view: [600, 600],
     },
     {
         chartid: 2,

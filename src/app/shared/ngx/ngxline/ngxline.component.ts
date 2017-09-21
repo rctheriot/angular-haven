@@ -53,4 +53,8 @@ export class NgxlineComponent implements OnInit {
     })
   }
 
+  public resize(x, y) {
+    this.view = [x - 20, y - 20];
+  }
+
 }

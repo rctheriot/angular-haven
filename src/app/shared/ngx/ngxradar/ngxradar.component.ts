@@ -40,4 +40,8 @@ export class NgxradarComponent implements OnInit, OnChanges {
     console.log(changes);
   }
 
+  public resize(x, y) {
+    this.view = [x - 20, y - 20];
+  }
+
 }

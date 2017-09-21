@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 
 declare var esri: any;
 
@@ -8,6 +8,9 @@ declare var esri: any;
   styleUrls: ['./arcgis-3d-map.component.css']
 })
 export class Arcgis3dMapComponent implements OnInit {
+
+  @Input() public view: [number, number];
+  @ViewChild('map') mapDiv;
 
   constructor() { }
 
@@ -52,6 +55,12 @@ export class Arcgis3dMapComponent implements OnInit {
     }
     myScript.src = '../../assets/libs/arctest.js';
     document.body.appendChild(myScript);
+  }
+
+  public resize(x, y) {
+    this.view = [x - 40, y - 60];
+    this.mapDiv.nativeElement.style.width = this.view[0] + 'px';
+    this.mapDiv.nativeElement.style.height = this.view[1] + 'px';
   }
 
 }
