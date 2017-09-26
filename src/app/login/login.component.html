@@ -1,16 +1,18 @@
 <div class="row">
   <div class="col-lg-1 col-centered">
     <md-card class="example-card">
-      <img md-card-image src="../../assets/images/haventextlogo.png">
+      <img md-card-image src="./assets/images/haventextlogo.png">
       <md-card-content>
         <md-input-container class="input-field">
-          <input mdInput placeholder="Email" value="">
+          <input mdInput placeholder="Email" type="email" [(ngModel)]="email">
         </md-input-container>
-        <md-input-container class="input-field">
-          <input mdInput placeholder="Password" value="">
+        <md-input-container class="input-field" >
+          <input mdInput placeholder="Password" type="password" [(ngModel)]="password">
         </md-input-container>
       </md-card-content>
         <button (click)="login()" class="login-button" md-raised-button>Login</button>
+        <hr>
+        <button (click)="createAccount()" class="create-button" md-raised-button>Create</button>
     </md-card>
   </div>
 </div>

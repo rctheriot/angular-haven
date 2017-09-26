@@ -1,0 +1,40 @@
+<div id="content" [@movePanel]='state' class="container sidebar">
+
+  <div (click)="toggleMenu()" class="menuButton">
+    <div class="menuButton-text">Maps</div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm">
+      <md-select placeholder="Scenario" [(ngModel)]="selScenario" [ngModelOptions]="{standalone: true}" class="input-field">
+        <md-option *ngFor="let scenario of scenarios" [value]="scenario">{{ scenario }}</md-option>
+      </md-select>
+    </div>
+
+    <div class="col-sm">
+      <md-select placeholder="Source" [(ngModel)]="selSource" [ngModelOptions]="{standalone: true}" class="input-field">
+        <md-option *ngFor="let source of sources" [value]="source">{{ source }}</md-option>
+      </md-select>
+    </div>
+
+    <div class="col-sm">
+      <md-select placeholder="Graph" [(ngModel)]="selGraph" [ngModelOptions]="{standalone: true}" class="input-field">
+        <md-option *ngFor="let graph of graphs" [value]="graph">{{ graph }}</md-option>
+      </md-select>
+    </div>
+
+    <div class="col-sm">
+      <md-form-field class="example-full-width" class="input-field">
+        <input mdInput [min]="minDate" [max]="maxDate" [mdDatepicker]="picker" (dateChange)="dateChange($event)" placeholder="Choose a date">
+        <md-datepicker-toggle mdSuffix [for]="picker"></md-datepicker-toggle>
+        <md-datepicker [startAt]="startDate" #picker></md-datepicker>
+      </md-form-field>
+    </div>
+
+    <div class="col-sm">
+      <button md-raised-button (click)="createWindow()" class="add-button">Add Window</button>
+    </div>
+
+  </div>
+
+</div>

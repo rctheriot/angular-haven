@@ -12,21 +12,21 @@ export class AuthService {
   signinUser(email: string, password: string) {
     this.afAuth.auth.signInWithEmailAndPassword(email, password)
       .then(
-        response => {
-          firebase.auth().currentUser.getIdToken()
-            .then(
-              (token: string) => {
-                this.token = token;
-                if (this.token) {
-                  this.router.navigate(['/home/example2']);
-                }
-              }
-            )
+      response => {
+        firebase.auth().currentUser.getIdToken()
+          .then(
+          (token: string) => {
+            this.token = token;
+            if (this.token) {
+              this.router.navigate(['/main/home']);
+            }
+          }
+          )
 
-        }
+      }
       )
       .catch(
-        error => console.log(error)
+      error => console.log(error)
       );
   }
 
@@ -39,12 +39,24 @@ export class AuthService {
   getToken() {
     this.afAuth.auth.currentUser.getIdToken()
       .then(
-        (token: string) => this.token = token
+      (token: string) => this.token = token
       );
     return this.token;
   }
 
+  getId() {
+    return this.afAuth.auth.currentUser.uid;
+  }
+
   isAuthenticated() {
     return this.token != null;
+  }
+
+  createAccount(email, password) {
+    this.afAuth.auth.createUserWithEmailAndPassword(email, password).catch(function (error) {
+
+      const errorMessage = error.message;
+      console.log(errorMessage);
+    });
   }
 }

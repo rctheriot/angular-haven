@@ -8,16 +8,20 @@ import { AuthService } from '../auth.service';
 })
 export class LoginComponent {
 
-  email: 'test@gmail.com';
-  password: 'asdfasdf';
-
+  email: string;
+  password: string;
 
   constructor(private authService: AuthService) {
-   this.login();
+    this.login();
   }
 
   login() {
-    this.authService.signinUser('test@gmail.com', 'asdfasdf');
+    this.authService.signinUser('hseohaven@gmail.com', '1^v^have');
+    //this.authService.signinUser(this.email, this.password);
+  }
+
+  createAccount() {
+    this.authService.createAccount(this.email, this.password);
   }
 
 }

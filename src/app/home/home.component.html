@@ -1,3 +1,14 @@
-<app-header></app-header>
-<router-outlet class="mainpage"></router-outlet>
-<app-footer></app-footer>
+<div *ngIf="!loaded" class="row">
+  <img class="loading-image" src="./assets/images/haven-animation.gif">
+</div>
+
+<div *ngIf="loaded">
+
+  <app-sidebaraccount></app-sidebaraccount>
+  <app-sidebarcharts></app-sidebarcharts>
+  <app-sidebarmaps></app-sidebarmaps>
+  
+  <div *ngFor="let window of windows">
+    <app-window [windowPanel]="window"></app-window>
+  </div>
+</div>

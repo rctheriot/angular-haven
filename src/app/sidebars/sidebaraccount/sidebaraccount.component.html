@@ -1,0 +1,50 @@
+<div id="content" [@movePanel]='state' class="container sidebar">
+
+  <div (click)="toggleMenu()" class="menuButton">
+    <div class="menuButton-text">Session</div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm">
+      <md-select placeholder="Select Session" [(ngModel)]="selSession" [ngModelOptions]="{standalone: true}" class="input-field">
+        <md-option *ngFor="let session of sessions | async" [value]="session.$key">{{ session.name }}</md-option>
+      </md-select>
+    </div>
+
+    <div class="col-sm">
+      <button md-raised-button (click)="loadSession()" class="load-session-button">Load</button>
+    </div>
+
+    <div class="col-sm">
+        <button md-raised-button (click)="deleteSession()" class="delete-session-button">Delete</button>
+    </div>
+
+    <div class="col-sm">
+        <md-input-container class="input-field">
+          <input mdInput placeholder="Session Name" [(ngModel)]="sessionsName">
+        </md-input-container>
+      </div>
+
+    <div class="col-sm">
+        <button md-raised-button (click)="saveSession()" class="save-session-button">Save</button>
+    </div>
+
+    <div class="col-sm">
+      <md-input-container class="input-field">
+        <input mdInput placeholder="Friend's Email" [(ngModel)]="shareSessionEmail">
+      </md-input-container>
+    </div>
+
+    <div class="col-sm">
+        <button md-raised-button (click)="shareSession()" class="share-session-button">Share (Coming Soon)</button>
+    </div>
+
+    <div class="col-sm">
+        <button md-raised-button (click)="clearSession()" class="clear-session-button">Clear Space</button>
+    </div>
+
+
+
+  </div>
+
+</div>

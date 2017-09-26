@@ -1,0 +1,11 @@
+<div *ngIf="!loaded" class="image">
+  <img class="loading-image" src="./assets/images/haven-animation.gif">
+</div>
+
+<div *ngIf="loaded">
+  <app-ngxline #child *ngIf="type =='line'" [view]="view" [data]="graphData"></app-ngxline>
+  <app-ngxradar #child *ngIf="type == 'radar'" [view]="view" [data]="graphData"></app-ngxradar>
+  <app-ngxguage #child *ngIf="type == 'guage'" [view]="view" [data]="graphData"></app-ngxguage>
+  <app-ngxvbar #child *ngIf="type == 'vbar'" [view]="view" [data]="graphData"></app-ngxvbar>
+  <app-ngxheatmap #child *ngIf="type == 'heatmap'" [view]="view" [data]="graphData"></app-ngxheatmap>
+</div>

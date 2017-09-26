@@ -1,4 +1,11 @@
-.mainpage {
-    top: 50px;
-    bottom: 50px;
+.row {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loading-image {
+  width: 300px;
+  height: 300px;
 }

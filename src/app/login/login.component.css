@@ -1,7 +1,7 @@
 .row {
   position: absolute;
   top: 50%;
-  left:50%;
+  left: 50%;
   transform: translate(-50%,-50%);
 }
 
@@ -10,6 +10,14 @@
 }
 
 .login-button {
+  width: 100%;
+  background-color: rgb(89, 158, 92);;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.create-button {
   width: 100%;
   background-color: rgb(40, 96, 141);
   color: white;
