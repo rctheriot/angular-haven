@@ -12,7 +12,6 @@ import {
 import { WindowPanel } from '../../window/shared/windowPanel';
 import { WindowService } from '../../window/shared/window.service';
 
-import { FirebaseApp } from 'angularfire2';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 import { AuthService } from '../../auth.service';
 
@@ -43,7 +42,7 @@ export class SidebaraccountComponent implements OnInit {
 
   sessions: FirebaseListObservable<any>;
 
-  constructor(private windowService: WindowService, private af: FirebaseApp, private db: AngularFireDatabase, private auth: AuthService) { }
+  constructor(private windowService: WindowService, private db: AngularFireDatabase, private auth: AuthService) { }
 
   ngOnInit() {
     this.sessions = this.db.list(`sessions/${this.auth.getId()}`);
