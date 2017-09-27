@@ -8,5 +8,6 @@
   </div>
   <div class="panel-body">
     <app-ngxgraph #child *ngIf="windowPanel.bodyType.split('-')[0] == 'ngxgraph'" [view]="getView" [type]="windowPanel.bodyType.split('-')[1]" [dbQuery]="windowPanel.dbQuery"></app-ngxgraph>
+    <app-leafmap #child *ngIf="windowPanel.bodyType.split('-')[0] == 'leafletmap'"></app-leafmap>
   </div>
 </div>

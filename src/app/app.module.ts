@@ -22,6 +22,7 @@ import 'hammerjs';
 import { NgxGraphsModule } from './ngx-graphs/ngx-graphs.module';
 import { SidebarsModule } from './sidebars/sidebars.module';
 
+
 // My Components
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -35,6 +36,8 @@ import { WindowComponent } from './window/window.component';
 import { WindowService } from './window/shared/window.service';
 
 // Experimental Components
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { LeafmapComponent } from './leaflet/leafmap/leafmap.component';
 //  import { ThreejsComponent } from './shared/threejs/threejs.component';
 //  import { Arcgis3dMapComponent } from './shared/arcgis/arcgis-3d-map/arcgis-3d-map.component';
 
@@ -52,6 +55,7 @@ import { WindowService } from './window/shared/window.service';
     AgmCoreModule.forRoot({ apiKey: 'AIzaSyBKzKeYcswjXCTr0oww5CyaIn86t_VEaKw' }),
     NgxGraphsModule,
     SidebarsModule,
+    LeafletModule.forRoot(),
   ],
   declarations: [
     AppComponent,
@@ -61,6 +65,7 @@ import { WindowService } from './window/shared/window.service';
     MainComponent,
     HomeComponent,
     WindowComponent,
+    LeafmapComponent,
   ],
   providers: [
     AuthService,

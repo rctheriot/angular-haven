@@ -13,7 +13,10 @@ export class HomeComponent implements OnInit {
   loaded: boolean;
   windows: WindowPanel[];
 
-  constructor(private windowService: WindowService) { this.loaded = false; }
+  constructor(private windowService: WindowService) {
+    this.loaded = false;
+  }
+
   ngOnInit() {
     this.getWindows();
   }

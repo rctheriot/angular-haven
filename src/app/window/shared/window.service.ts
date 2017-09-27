@@ -6,7 +6,6 @@ import { WINDOWS } from './windows';
 export class WindowService {
 
   numberOfWindows = 0;
-  numb = Math.random();
 
   getWindows(): Promise<WindowPanel[]> {
     return Promise.resolve(WINDOWS);
@@ -22,9 +21,7 @@ export class WindowService {
 
   addWindow(win: WindowPanel) {
     win.id = this.numberOfWindows;
-
     this.numberOfWindows++;
-    console.log(this.numb);
     WINDOWS.push(win);
   }
 

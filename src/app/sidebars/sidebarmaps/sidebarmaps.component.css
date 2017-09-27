@@ -49,13 +49,7 @@
   width: 100%;
 }
 
-.add-button {
-  width: 100%;
-  background-color: rgb(201, 84, 103);
-  color: white;
-  font-size: 16px;
-}
-.capcity-button {
+.map-button {
   width: 100%;
   background-color: rgb(201, 84, 103);
   color: white;
