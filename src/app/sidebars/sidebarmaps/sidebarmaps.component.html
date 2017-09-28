@@ -10,6 +10,20 @@
       <button md-raised-button (click)="createMap()" class="map-button">Show Map</button>
     </div>
 
+    <div class="col-sm">
+      <md-select placeholder="Select Layer" [(ngModel)]="selLayer" [ngModelOptions]="{standalone: true}" class="input-field">
+        <md-option *ngFor="let layer of layers" [value]="layer">{{ layer }}</md-option>
+      </md-select>
+    </div>
+
+    <div class="col-sm">
+      <button md-raised-button (click)="addLayer()" class="add-button">Show Layer</button>
+    </div>
+
+    <div class="col-sm">
+      <button md-raised-button (click)="removeLayer()" class="remove-button">Hide Layer</button>
+    </div>
+
   </div>
 
 </div>

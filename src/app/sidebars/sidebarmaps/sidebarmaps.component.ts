@@ -11,6 +11,8 @@ import {
 
 import { WindowPanel } from '../../window/shared/windowPanel';
 import { WindowService } from '../../window/shared/window.service';
+import { LeaflayersService } from '../../leaflet/leaflayers.service';
+
 
 @Component({
   selector: 'app-sidebarmaps',
@@ -33,9 +35,13 @@ export class SidebarmapsComponent implements OnInit {
 
   state = 'inactive';
 
-  constructor(private windowService: WindowService) { }
+  layers: any;
+  selLayer: any;
+
+  constructor(private windowService: WindowService, private leafService: LeaflayersService) { }
 
   ngOnInit() {
+    this.leafService.getLayers().then(layers => { this.layers = layers });
   }
 
   createMap() {
@@ -45,6 +51,14 @@ export class SidebarmapsComponent implements OnInit {
 
   toggleMenu() {
     this.state = (this.state === 'inactive' ? 'active' : 'inactive');
+  }
+
+  addLayer() {
+
+  }
+
+  removeLayer() {
+
   }
 
 }

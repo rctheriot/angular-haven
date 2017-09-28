@@ -34,6 +34,7 @@ import { WindowComponent } from './window/window.component';
 
 // My Services
 import { WindowService } from './window/shared/window.service';
+import { LeaflayersService } from './leaflet/leaflayers.service'
 
 // Experimental Components
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
@@ -71,6 +72,7 @@ import { LeafmapComponent } from './leaflet/leafmap/leafmap.component';
     AuthService,
     AuthGuard,
     WindowService,
+    LeaflayersService,
   ],
   bootstrap: [AppComponent]
 })

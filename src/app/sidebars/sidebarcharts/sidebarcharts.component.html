@@ -12,12 +12,6 @@
     </div>
 
     <div class="col-sm">
-      <md-select placeholder="Source" [(ngModel)]="selSource" [ngModelOptions]="{standalone: true}" class="input-field">
-        <md-option *ngFor="let source of sources" [value]="source">{{ source }}</md-option>
-      </md-select>
-    </div>
-
-    <div class="col-sm">
       <md-select placeholder="Graph" [(ngModel)]="selGraph" [ngModelOptions]="{standalone: true}" class="input-field">
         <md-option *ngFor="let graph of graphs" [value]="graph">{{ graph }}</md-option>
       </md-select>
@@ -33,11 +27,6 @@
 
     <div class="col-sm">
       <button md-raised-button (click)="createWindow()" class="add-button">Add Window</button>
-    </div>
-
-
-    <div class="col-sm">
-        <button md-raised-button  (click)="createWindow2()" class="capcity-button">Add Capcity Chart</button>
     </div>
 
   </div>

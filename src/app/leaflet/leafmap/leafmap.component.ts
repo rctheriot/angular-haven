@@ -6,6 +6,8 @@ import { AngularFireDatabase } from 'angularfire2/database'
 import * as firebase from 'firebase/app'
 import 'firebase/storage'
 
+import { LeaflayersService } from '../leaflayers.service'
+
 @Component({
   selector: 'app-leafmap',
   templateUrl: './leafmap.component.html',
@@ -33,7 +35,7 @@ export class LeafmapComponent implements OnInit {
     center: L.latLng([21.440066, -157.999602])
   };
 
-  constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase) { }
+  constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase, private layerservice: LeaflayersService) { }
 
   ngOnInit() {
 
@@ -69,11 +71,15 @@ export class LeafmapComponent implements OnInit {
 
         });
 
-        L.geoJSON(geojsonFeature, {
+        const newLayer = (L.geoJSON(geojsonFeature,  {
           style: (feature) => ({ color: c }),
           onEachFeature: (feature, layer) => { this.onEachFeature(feature, layer) } ,
-        }
-        ).addTo(this.map);
+        }));
+
+        console.log(newLayer);
+        this.layerservice.addLayer(newLayer);
+        this.map.addLayer(newLayer);
+
       };
       xhr.open('GET', url);
       xhr.send();
@@ -99,7 +105,13 @@ export class LeafmapComponent implements OnInit {
     }
   }
 
+  addLayer(layer: any) {
+    this.map.addLayer(layer);
+  }
 
+  removeLayer(layer: any) {
+    this.map.removeLayer(layer);
+  }
 
   public resize(width: number, height: number) {
     this.mapDiv.nativeElement.style.height = height - 60 + 'px';

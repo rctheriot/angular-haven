@@ -36,11 +36,8 @@ export class SidebarchartsComponent implements OnInit {
   selScenario: string;
   scenarios = ['e3genmod'];
 
-  selSource: string;
-  sources = ['demand', 'supply', 'capactiy'];
-
   selGraph: string;
-  graphs = ['line', 'guage', 'radar', 'vbar', 'heatmap'];
+  graphs = ['line', 'radar'];
 
   selDate: string;
 
@@ -57,12 +54,7 @@ export class SidebarchartsComponent implements OnInit {
   }
 
   createWindow() {
-    const newWin = new WindowPanel(this.query, `ngxgraph-${this.selGraph}`, `/${this.selScenario}/${this.selSource}/${this.selDate}`);
-    this.windowService.addWindow(newWin);
-  }
-
-  createWindow2() {
-    const newWin = new WindowPanel(this.query, `ngxgraph-line`, `AllCapacity`);
+    const newWin = new WindowPanel(this.query, `ngxgraph-${this.selGraph}`, `/${this.selScenario}/${this.selDate}`);
     this.windowService.addWindow(newWin);
   }
 
