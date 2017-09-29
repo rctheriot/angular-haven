@@ -23,9 +23,9 @@ export class NgxradarComponent {
 
 
   constructor() {
-    this.colorScheme.domain.sort(function () {
-      return .5 - Math.random();
-    });
+    // this.colorScheme.domain.sort(function () {
+    //   return .5 - Math.random();
+    // });
   };
 
 }

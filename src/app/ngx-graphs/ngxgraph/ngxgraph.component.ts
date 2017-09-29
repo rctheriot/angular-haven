@@ -1,5 +1,8 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
+import { Observable } from 'rxjs/Rx'
+import 'rxjs/add/operator/take';
+import * as firebase from 'firebase';
 
 import { SingleData } from '../shared/singledata';
 import { MultiData } from '../shared/multidata';
@@ -20,7 +23,6 @@ export class NgxgraphComponent implements OnInit {
   @Input() dbQuery: string;
   @Input() type: string;
 
-  dataObs: FirebaseListObservable<any[]>;
   graphData: any[];
   loaded: boolean;
 
@@ -40,116 +42,79 @@ export class NgxgraphComponent implements OnInit {
   createDayGraph(scenario: string, year: number, month: number, day: number) {
 
     const stationArray = [];
+    const capacityArray = [];
+    const profileArray = [];
+    const demandArray = [];
+    const fossilArray = []
+    const data = [];
 
-    // Get Key Reference
-    const key = this.db.list('/key/', { preserveSnapshot: true });
-
-    // Get all stations
-    key.subscribe(stations => {
+    firebase.database().ref().child(`/key/`).once('value').then((stations) => {
       stations.forEach(station => {
-        if (station.child('resource').val() === 'Fossil') { return; }
-        stationArray.push({ id: station.key, resource: station.child('resource').val() });
-      });
-
-      // Get each stations Capacity
-      stationArray.forEach(el => {
-        const capacity = this.db.object(`/scenarios/${scenario}/capacity/${el.id}/${year}`, { preserveSnapshot: true });
-        capacity.subscribe(snapshot => {
-          let cap = snapshot.val()
-          if (cap == null) { cap = 0; }
-          el['capacity'] = cap;
-        })
+        const sta = station.val();
+        sta['id'] = station.key;
+        stationArray.push(sta);
       })
-
-      // Get each stations Profile and Supply
-      stationArray.forEach(el => {
-        const profile = this.db.object(`/scenarios/${scenario}/profile/${el.resource}/${year}/${month}/${day}/`, { preserveSnapshot: true });
-        el['profile'] = [];
-        el['supply'] = [];
-        profile.subscribe(snapshots => {
-          snapshots.forEach(hr => {
-            let prof = hr.val()
-            if (prof == null) { prof = 0; }
-            el['profile'].push({ [hr.key]: prof });
-            el['supply'].push({ 'name': hr.key, 'value': Number(prof * el.capacity) });
+    }).then(() => {
+      firebase.database().ref().child(`/scenarios/${scenario}/capacity/${year}`).once('value').then((capacities) => {
+        capacities.forEach(capacity => {
+          capacityArray.push({ 'value': capacity.val(), 'id': capacity.key });
+        })
+      }).then(() => {
+        firebase.database().ref().child(`/profiles/${year}/${month}/${day}/`).once('value').then((profiles) => {
+          profiles.forEach(profile => {
+            const value = profile.val();
+            value['hour'] = profile.key;
+            profileArray.push(value);
           })
-        })
-      })
-
-      // Obtain the hourly Demand and fossil supply
-      const demandObj = {
-        'name': 'Demand',
-        'series': [],
-      }
-      const fossilObj = {
-        'name': 'Fossil',
-        'series': [],
-      }
-      const demand = this.db.object(`/scenarios/${scenario}/demand//${year}/${month}/${day}/`, { preserveSnapshot: true });
-      demand.subscribe(snapshots => {
-        snapshots.forEach(dem => {
-          let hourDemand = dem.val();
-          const hr = dem.key;
-          demandObj['series'].push({ 'name': hr, 'value': hourDemand });
-
-          // Get Fossil hourly supply  = Demand - RenewableSupply
-          stationArray.forEach(el => {
-            el['supply'].forEach(stationhoursupply => {
-              if (stationhoursupply['name'] == hr) {
-                hourDemand -= stationhoursupply['value'];
+        }).then(() => {
+          firebase.database().ref().child(`/scenarios/${scenario}/demand/${year}/${month}/${day}/`).once('value').then((demands) => {
+            demands.forEach(demand => {
+              demandArray.push({ 'name': demand.key, 'value': Number(demand.val()) });
+              fossilArray.push({ 'name': demand.key, 'value': Number(demand.val()) });
+            })
+          }).then(() => {
+            data.push(this.makeMulti('Demand', demandArray));
+            capacityArray.forEach(capacity => {
+              const id = capacity.id;
+              const cap = capacity.value;
+              let resource = null;
+              const hourlySupply = [];
+              stationArray.forEach(station => {
+                if (station.id === id) {
+                  resource = station.resource;
+                }
+              })
+              profileArray.forEach(profile => {
+                const hour = profile['hour'];
+                let supply = cap * Number(profile[resource]);
+                if (isNaN(supply) || supply < 0 ) { supply = 0; }
+                hourlySupply.push({ 'name': profile['hour'], 'value': Number(supply) });
+                fossilArray.forEach(fossil => {
+                  if (fossil['name'] === hour) {
+                    if (!isNaN(supply)) {
+                      fossil['value'] -= supply;
+                    }
+                  }
+                })
+              })
+              if (resource !== 'Fossil') {
+                data.push(this.makeMulti(`${resource} - ${id}`, hourlySupply));
               }
             })
+            data.push(this.makeMulti('Fossil', fossilArray));
+            this.graphData = data;
+            this.loaded = true;
           });
-          fossilObj['series'].push({ 'name': hr, 'value': hourDemand });
-        })
-      })
-
-      this.graphData.push(demandObj);
-      this.graphData.push(fossilObj);
-      stationArray.forEach(el => {
-        this.graphData.push({
-          'name': el.resource + ' : ' + el.id,
-          'series': el['supply'],
         });
       });
-
-      setTimeout(() => { this.loaded = true; }, 1000);
-
-    })
-
+    });
   }
 
-  getMultiData(dataQuery: string) {
-    this.dataObs = this.db.list(dataQuery, { preserveSnapshot: true });
-    this.dataObs.subscribe(snapshots => {
-      //
-      const name = dataQuery.split('/')[3] + '/' + dataQuery.split('/')[4] + '/' + dataQuery.split('/')[5];
-      //
-      const data = new MultiData(name);
-      snapshots.forEach(snapshot => {
-        const snapData = new SingleData(snapshot.key);
-        snapData.value = snapshot.val();
-        data.series.push(snapData);
-      });
-      this.graphData.push(data);
-      this.loaded = true;
-    })
-  }
-
-  getSingleData(dataQuery: string) {
-    this.dataObs = this.db.list(dataQuery, { preserveSnapshot: true });
-    this.dataObs.subscribe(snapshots => {
-      const data = [];
-      snapshots.forEach(snapshot => {
-        const snapData = new SingleData(snapshot.key);
-        snapData.value = snapshot.val();
-        data.push(snapData);
-      });
-      data.forEach(el => {
-        this.graphData.push(el);
-      })
-      this.loaded = true;
-    })
+  makeMulti(name: string, series: any[]) {
+    return {
+      'name': name,
+      'series': series,
+    }
   }
 
   public resize(width: number, height: number) {
@@ -165,26 +130,6 @@ export class NgxgraphComponent implements OnInit {
     } else {
       return 'single';
     }
-  }
-
-  getCapacity() {
-    this.dataObs = this.db.list('/e3genmod/capacity', { preserveSnapshot: true });
-    this.dataObs.subscribe(snapshots => {
-      const data = []
-      snapshots.forEach(snapshot => {
-        const innerdata = new MultiData(snapshot.child('station').val());
-        snapshot.child('capacity').forEach(yearsnap => {
-          const snapData = new SingleData(yearsnap.key);
-          snapData.value = yearsnap.val();
-          innerdata.series.push(snapData);
-        });
-        data.push(innerdata);
-      });
-      data.forEach(el => {
-        this.graphData.push(el);
-      })
-      this.loaded = true;
-    });
   }
 
 }

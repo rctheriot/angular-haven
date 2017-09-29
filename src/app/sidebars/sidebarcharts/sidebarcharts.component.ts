@@ -34,18 +34,23 @@ export class SidebarchartsComponent implements OnInit {
   query: string;
 
   selScenario: string;
-  scenarios = ['e3genmod'];
+  scenarios = ['e3genmod', 'e3', 'postapril'];
 
   selGraph: string;
-  graphs = ['line', 'radar'];
+  graphs = ['line', 'radar', 'area', 'stackhbar', 'stackvbar'];
 
   selDate: string;
+  date: Date;
 
   minDate = new Date(2016, 0, 1);
   maxDate = new Date(2045, 11, 31);
   startDate = new Date(2016, 0, 1);
 
   state = 'inactive';
+
+  monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+  ];
 
   constructor(private windowService: WindowService) { }
 
@@ -54,16 +59,23 @@ export class SidebarchartsComponent implements OnInit {
   }
 
   createWindow() {
-    const newWin = new WindowPanel(this.query, `ngxgraph-${this.selGraph}`, `/${this.selScenario}/${this.selDate}`);
+    const newWin = new WindowPanel(`${this.selScenario.toLocaleUpperCase()} - ${this.titleDate()}`, `ngxgraph-${this.selGraph}`, `/${this.selScenario}/${this.selDate}`);
     this.windowService.addWindow(newWin);
   }
 
   dateChange(e) {
-    const date = e.value;
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+    this.date = e.value;
+    const year = this.date.getFullYear();
+    const month = this.date.getMonth() + 1;
+    const day = this.date.getDate();
     this.selDate = year + '/' + month + '/' + day;
+  }
+
+  titleDate() {
+    const year = this.date.getFullYear();
+    const month = this.monthNames[this.date.getMonth()];
+    const day = this.date.getDate();
+    return `${day} ${month} ${year}`;
   }
 
   toggleMenu() {

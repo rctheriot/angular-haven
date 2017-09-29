@@ -1,12 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'app-ngxline',
-  templateUrl: './ngxline.component.html',
-  styleUrls: ['./ngxline.component.css']
+  selector: 'app-ngxarea',
+  templateUrl: './ngxarea.component.html',
+  styleUrls: ['./ngxarea.component.css']
 })
-export class NgxlineComponent {
-
+export class NgxareaComponent {
   @Input() data: any[];
   @Input() xAxisLabel: string;
   @Input() yAxisLabel: string;
@@ -31,11 +30,7 @@ export class NgxlineComponent {
     '#7c9fb0', '#5698c4', '#9abf88']
   };
 
-  constructor() {
-    // this.colorScheme.domain.sort(function() {
-    //   return .5 - Math.random();
-    // });
-  };
+  constructor() { }
 
 
 }

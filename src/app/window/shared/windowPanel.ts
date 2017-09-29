@@ -12,7 +12,7 @@ export class WindowPanel {
   dbQuery: string;
 
   constructor(title: string, bodyType: string, dbquery: string) {
-    this.title = 'test';
+    this.title = title;
     this.left = 200;
     this.top = 200;
     this.width = 500;

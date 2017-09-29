@@ -9,6 +9,7 @@ import { routes } from './app.routes';
 import { AngularFireModule, FirebaseApp } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
+import * as firebase from 'firebase';
 import { AuthService } from './auth.service'
 import { AuthGuard } from './auth-guard.service';
 import { environment } from '../environments/environment';
@@ -21,7 +22,6 @@ import 'hammerjs';
 // My Modules
 import { NgxGraphsModule } from './ngx-graphs/ngx-graphs.module';
 import { SidebarsModule } from './sidebars/sidebars.module';
-
 
 // My Components
 import { AppComponent } from './app.component';
