@@ -10,18 +10,25 @@
       <button md-raised-button (click)="createMap()" class="map-button">Show Map</button>
     </div>
 
-    <div class="col-sm">
-      <md-select placeholder="Select Layer" [(ngModel)]="selLayer" [ngModelOptions]="{standalone: true}" class="input-field">
-        <md-option *ngFor="let layer of layers" [value]="layer">{{ layer }}</md-option>
-      </md-select>
-    </div>
+    <hr>
 
     <div class="col-sm">
-      <button md-raised-button (click)="addLayer()" class="add-button">Show Layer</button>
+      <md-slide-toggle (change)="showDOD($event)">DOD Layer</md-slide-toggle>
     </div>
-
     <div class="col-sm">
-      <button md-raised-button (click)="removeLayer()" class="remove-button">Hide Layer</button>
+      <md-slide-toggle (change)="showFlood($event)">Flood Zones</md-slide-toggle>
+    </div>
+    <div class="col-sm">
+      <md-slide-toggle (change)="showAgr($event)">Agricultural</md-slide-toggle>
+    </div>
+    <div class="col-sm">
+      <md-slide-toggle (change)="showLandUse($event)">Land Use</md-slide-toggle>
+    </div>
+    <div class="col-sm">
+      <md-slide-toggle (change)="showParks($event)">State Parks</md-slide-toggle>
+    </div>
+    <div class="col-sm">
+      <md-slide-toggle (change)="showLava($event)">Lava Flow</md-slide-toggle>
     </div>
 
   </div>

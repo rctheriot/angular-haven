@@ -53,12 +53,28 @@ export class SidebarmapsComponent implements OnInit {
     this.state = (this.state === 'inactive' ? 'active' : 'inactive');
   }
 
-  addLayer() {
-
+  showDOD(event) {
+    this.leafService.dod = event.checked;
   }
 
-  removeLayer() {
+  showFlood(event) {
+    this.leafService.flood = event.checked;
+  }
 
+  showAgr(event) {
+    this.leafService.agr = event.checked;
+  }
+
+  showLandUse(event) {
+    this.leafService.landuse = event.checked;
+  }
+
+  showParks(event) {
+    this.leafService.parks = event.checked;
+  }
+
+  showLava(event) {
+    this.leafService.lava = event.checked;
   }
 
 }

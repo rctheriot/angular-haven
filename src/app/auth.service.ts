@@ -26,7 +26,7 @@ export class AuthService {
       }
       )
       .catch(
-      error => console.log(error)
+      error => alert(error)
       );
   }
 
@@ -53,10 +53,13 @@ export class AuthService {
   }
 
   createAccount(email, password) {
-    this.afAuth.auth.createUserWithEmailAndPassword(email, password).catch(function (error) {
-
-      const errorMessage = error.message;
-      console.log(errorMessage);
+    this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(function (user) {
+      if (user !== null) {
+        alert('Account Created Successfully');
+      }
+    }, function (error) {
+      // Handle Errors here.
+      alert(error.message);
     });
   }
 }

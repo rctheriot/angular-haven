@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, ViewChild } from '@angular/core';
 import * as L from 'leaflet';
 
 import { AngularFireAuth } from 'angularfire2/auth'
@@ -13,15 +13,20 @@ import { LeaflayersService } from '../leaflayers.service'
   templateUrl: './leafmap.component.html',
   styleUrls: ['./leafmap.component.css']
 })
-export class LeafmapComponent implements OnInit {
+export class LeafmapComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('mapDiv') mapDiv;
 
   map: any;
   geoJson: any;
 
+  layerkey = {};
+  subscriptions = [];
+
   colorNumber = 0;
-  colorScheme = [ '#dd1c5c', '#ee7733', '#7ae380', '#40ecbe', '#44aaff', '#8844ff'];
+  colorScheme = ['#dd1c5c', '#ee7733', '#7ae380', '#40ecbe', '#44aaff', '#8844ff'];
+
+  layer1: boolean;
 
   options = {
     layers: [
@@ -37,21 +42,77 @@ export class LeafmapComponent implements OnInit {
 
   constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase, private layerservice: LeaflayersService) { }
 
+  ngOnDestroy() {
+    this.subscriptions[0].unsubscribe();
+  }
+
   ngOnInit() {
+    const sub1 = this.layerservice.dod$.subscribe((newBool: boolean) => {
+      if (newBool) {
+        this.addLayer('dod');
+      } else {
+        this.removeLayer('dod');
+      }
+    });
+    this.subscriptions.push(sub1);
+
+    this.layerservice.flood$.subscribe((newBool: boolean) => {
+      if (newBool) {
+        this.addLayer('flood');
+      } else {
+        this.removeLayer('flood');
+      }
+    });
+
+    this.layerservice.agr$.subscribe((newBool: boolean) => {
+      if (newBool) {
+        this.addLayer('agr');
+      } else {
+        this.removeLayer('agr');
+      }
+    });
+
+    this.layerservice.landuse$.subscribe((newBool: boolean) => {
+      if (newBool) {
+        this.addLayer('land');
+      } else {
+        this.removeLayer('land');
+      }
+    });
+
+    this.layerservice.parks$.subscribe((newBool: boolean) => {
+      if (newBool) {
+        this.addLayer('parks');
+      } else {
+        this.removeLayer('parks');
+      }
+    });
+
+    this.layerservice.lava$.subscribe((newBool: boolean) => {
+      if (newBool) {
+        this.addLayer('lava');
+      } else {
+        this.removeLayer('lava');
+      }
+    });
+
+  }
+
+  ngOnChanges() {
 
   }
 
   setMap(map: L.Map) {
     this.map = map;
-    this.loadMap('mapdata/DOD_Parcels.json', this.colorScheme[this.colorNumber++]);
-    this.loadMap('mapdata/Flood_Zones.json', this.colorScheme[this.colorNumber++]);
-    this.loadMap('mapdata/Important_Agricultural_Lands_IAL.json', this.colorScheme[this.colorNumber++]);
-    this.loadMap('mapdata/Oahu_Land_Use_1998.json', this.colorScheme[this.colorNumber++]);
-    this.loadMap('mapdata/Parks_State_Polygon.json', this.colorScheme[this.colorNumber++]);
-    this.loadMap('mapdata/Volcano_Lava_Flow_Hazard_Zones.json', this.colorScheme[this.colorNumber++]);
+    this.loadMap('mapdata/DOD_Parcels.json', this.colorScheme[this.colorNumber++], 'dod');
+    this.loadMap('mapdata/Flood_Zones.json', this.colorScheme[this.colorNumber++], 'flood');
+    this.loadMap('mapdata/Important_Agricultural_Lands_IAL.json', this.colorScheme[this.colorNumber++], 'agr');
+    this.loadMap('mapdata/Oahu_Land_Use_1998.json', this.colorScheme[this.colorNumber++], 'land');
+    this.loadMap('mapdata/Parks_State_Polygon.json', this.colorScheme[this.colorNumber++], 'parks');
+    this.loadMap('mapdata/Volcano_Lava_Flow_Hazard_Zones.json', this.colorScheme[this.colorNumber++], 'lava');
   }
 
-  loadMap(mapUrl: string, c: string) {
+  loadMap(mapUrl: string, c: string, key: string) {
     const geojsonFeature = {
       'type': 'FeatureCollection',
       'features': []
@@ -71,14 +132,13 @@ export class LeafmapComponent implements OnInit {
 
         });
 
-        const newLayer = (L.geoJSON(geojsonFeature,  {
+        const newLayer = (L.geoJSON(geojsonFeature, {
           style: (feature) => ({ color: c }),
-          onEachFeature: (feature, layer) => { this.onEachFeature(feature, layer) } ,
+          onEachFeature: (feature, layer) => { this.onEachFeature(feature, layer) },
         }));
 
-        console.log(newLayer);
-        this.layerservice.addLayer(newLayer);
-        this.map.addLayer(newLayer);
+        const index = this.layerservice.addLayer(newLayer);
+        this.layerkey[key] = index;
 
       };
       xhr.open('GET', url);
@@ -105,12 +165,14 @@ export class LeafmapComponent implements OnInit {
     }
   }
 
-  addLayer(layer: any) {
-    this.map.addLayer(layer);
+  addLayer(key: string) {
+    const index = this.layerkey[key];
+    this.layerservice.getLayer(index).then(layer => this.map.addLayer(layer));
   }
 
-  removeLayer(layer: any) {
-    this.map.removeLayer(layer);
+  removeLayer(key: string) {
+    const index = this.layerkey[key];
+    this.layerservice.getLayer(index).then(layer => this.map.removeLayer(layer));
   }
 
   public resize(width: number, height: number) {
