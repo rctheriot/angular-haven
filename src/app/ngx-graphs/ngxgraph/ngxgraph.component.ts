@@ -93,6 +93,7 @@ export class NgxgraphComponent implements OnInit {
                   if (fossil['name'] === hour) {
                     if (!isNaN(supply)) {
                       fossil['value'] -= supply;
+                      if (fossil['value'] < 0) { fossil['value'] = 0; }
                     }
                   }
                 })

@@ -14,7 +14,6 @@ export class LoginComponent {
 
 
   constructor(private authService: AuthService) {
-
   }
 
   login() {
