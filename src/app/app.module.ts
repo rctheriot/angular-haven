@@ -20,6 +20,7 @@ import { AgmCoreModule } from '@agm/core';
 import 'hammerjs';
 
 // My Modules
+import { PlotlyChartsModule } from './plotly-charts/plotly-charts.module';
 import { NgxGraphsModule } from './ngx-graphs/ngx-graphs.module';
 import { SidebarsModule } from './sidebars/sidebars.module';
 
@@ -34,11 +35,14 @@ import { WindowComponent } from './window/window.component';
 
 // My Services
 import { WindowService } from './window/shared/window.service';
-import { LeaflayersService } from './leaflet/leaflayers.service'
+import { LeaflayersService } from './leaflet/leaflayers.service';
+import { PlotlyChartsService } from './plotly-charts/service/plotly-charts.service';
 
 // Experimental Components
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { LeafmapComponent } from './leaflet/leafmap/leafmap.component';
+
+
 //  import { ThreejsComponent } from './shared/threejs/threejs.component';
 //  import { Arcgis3dMapComponent } from './shared/arcgis/arcgis-3d-map/arcgis-3d-map.component';
 
@@ -55,6 +59,7 @@ import { LeafmapComponent } from './leaflet/leafmap/leafmap.component';
     MaterialModule,
     AgmCoreModule.forRoot({ apiKey: 'AIzaSyBKzKeYcswjXCTr0oww5CyaIn86t_VEaKw' }),
     NgxGraphsModule,
+    PlotlyChartsModule,
     SidebarsModule,
     LeafletModule.forRoot(),
   ],
@@ -73,6 +78,7 @@ import { LeafmapComponent } from './leaflet/leafmap/leafmap.component';
     AuthGuard,
     WindowService,
     LeaflayersService,
+    PlotlyChartsService,
   ],
   bootstrap: [AppComponent]
 })

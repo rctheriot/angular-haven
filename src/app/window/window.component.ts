@@ -17,6 +17,7 @@ export class WindowComponent implements AfterViewInit {
   @ViewChild('panelDiv') panelDiv;
   @ViewChild('child') childComponent;
   @ViewChild('glyphSize') glyphSize;
+  @ViewChild('panelBody') panelBody;
 
   @Input() public title: string;
   @Input() public type: string;
@@ -41,6 +42,8 @@ export class WindowComponent implements AfterViewInit {
     this.panelDiv.nativeElement.style.height = this.windowPanel.height + 'px';
     this.panelDiv.nativeElement.style.left = this.windowPanel.left + 'px';
     this.panelDiv.nativeElement.style.top = this.windowPanel.top + 'px';
+    this._renderer.setElementStyle(
+      this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.windowPanel.backgroundAlpha + ')');
 
     this.childComponent.resize(this.windowPanel.width, this.windowPanel.height);
 
@@ -144,7 +147,7 @@ export class WindowComponent implements AfterViewInit {
 
       this.windowPanel.width = this.panelDiv.nativeElement.getBoundingClientRect().width;
       this.windowPanel.height = this.panelDiv.nativeElement.getBoundingClientRect().height;
-      this.childComponent.resize(this.windowPanel.width, this.windowPanel.height);
+      this.childComponent.resize(this.windowPanel.width - 10, this.windowPanel.height - 40);
     }
   }
 

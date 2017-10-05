@@ -5,8 +5,12 @@
   left: 100px;
   position: absolute;
   background-color: rgba(255, 255, 255, 0.5);
+  margin: 0;
 }
 
+.panel-body {
+  padding: 5px;
+}
 .resizable {
   overflow: hidden;
   resize: both

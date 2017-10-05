@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs/Rx'
 import 'rxjs/add/operator/take';
 import * as firebase from 'firebase';
@@ -26,7 +25,7 @@ export class NgxgraphComponent implements OnInit {
   graphData: any[];
   loaded: boolean;
 
-  constructor(private db: AngularFireDatabase) { }
+  constructor() { }
 
   ngOnInit() {
     this.loaded = false;

@@ -28,7 +28,9 @@
         "styles.css",
         "../node_modules/leaflet/dist/leaflet.css"
       ],
-      "scripts": [],
+      "scripts": [
+        "../node_modules/plotly.js/dist/plotly.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

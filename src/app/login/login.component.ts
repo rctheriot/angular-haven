@@ -12,7 +12,6 @@ export class LoginComponent {
   email: string;
   password: string;
 
-
   constructor(private authService: AuthService) {
   }
 
@@ -22,10 +21,6 @@ export class LoginComponent {
 
   createAccount() {
     this.authService.createAccount(this.email, this.password);
-  }
-
-  close() {
-
   }
 
 }

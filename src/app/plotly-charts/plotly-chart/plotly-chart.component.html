@@ -1,0 +1,6 @@
+
+<div>
+  <app-plotly-line #child *ngIf="query.chartType =='line'" [query]="query"></app-plotly-line>
+  <app-plotly-3dsurface #child *ngIf="query.chartType =='3dsurface'" [query]="query"></app-plotly-3dsurface>
+  <app-plotly-bar #child *ngIf="query.chartType =='bar'" [query]="query"></app-plotly-bar>
+</div>

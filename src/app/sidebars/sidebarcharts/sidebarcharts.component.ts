@@ -11,6 +11,8 @@ import {
 
 import { WindowPanel } from '../../window/shared/windowPanel';
 import { WindowService } from '../../window/shared/window.service';
+import { PlotlyChartsService } from '../../plotly-charts/service/plotly-charts.service';
+import { PlotlyQuery } from '../../plotly-charts/shared/plotlyQuery';
 
 @Component({
   selector: 'app-sidebarcharts',
@@ -36,10 +38,12 @@ export class SidebarchartsComponent implements OnInit {
   selScenario: string;
   scenarios = ['e3genmod', 'e3', 'postapril'];
 
-  selGraph: string;
-  graphs = ['line', 'radar', 'area', 'stackhbar', 'stackvbar'];
+  selChart: string;
+  charts = [];
 
-  selDate: string;
+  selYear: number;
+  selMonth: number;
+  selDay: number;
   date: Date;
 
   minDate = new Date(2016, 0, 1);
@@ -52,23 +56,32 @@ export class SidebarchartsComponent implements OnInit {
   'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  constructor(private windowService: WindowService) { }
+  constructor(private windowService: WindowService, private chartService: PlotlyChartsService) { }
 
   ngOnInit() {
-    this.selDate = 2016 + '/' + 1 + '/' + 1;
+    this.charts = this.chartService.getChartTypes();
+    console.log(this.charts);
+    this.selYear = this.startDate.getFullYear();
+    this.selMonth = this.startDate.getMonth();
+    this.selDay = this.startDate.getDate();
   }
 
   createWindow() {
-    const newWin = new WindowPanel(`${this.selScenario.toLocaleUpperCase()} - ${this.titleDate()}`, `ngxgraph-${this.selGraph}`, `/${this.selScenario}/${this.selDate}`);
+    const query = new PlotlyQuery();
+    query.chartType = this.selChart;
+    query.year = this.selYear;
+    query.month = this.selMonth;
+    query.day = this.selDay;
+    query.scenario = this.selScenario;
+    const newWin = new WindowPanel(`${this.selScenario.toLocaleUpperCase()} - ${this.titleDate()}`, 'plotly', query);
     this.windowService.addWindow(newWin);
   }
 
   dateChange(e) {
     this.date = e.value;
-    const year = this.date.getFullYear();
-    const month = this.date.getMonth() + 1;
-    const day = this.date.getDate();
-    this.selDate = year + '/' + month + '/' + day;
+    this.selYear = this.date.getFullYear();
+    this.selMonth = this.date.getMonth() + 1;
+    this.selDay = this.date.getDate();
   }
 
   titleDate() {

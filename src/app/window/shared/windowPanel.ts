@@ -9,18 +9,18 @@ export class WindowPanel {
   zindex: number;
 
   bodyType: string;
-  dbQuery: string;
+  query: any;
 
-  constructor(title: string, bodyType: string, dbquery: string) {
+  constructor(title: string, bodyType: string, dbquery: any) {
     this.title = title;
     this.left = 200;
     this.top = 200;
     this.width = 500;
     this.height = 500;
-    this.backgroundAlpha = 1.0;
+    this.backgroundAlpha = 0.5;
     this.zindex = 0;
 
     this.bodyType = bodyType;
-    this.dbQuery = dbquery;
+    this.query = dbquery;
   }
 }

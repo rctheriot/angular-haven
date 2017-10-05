@@ -30,7 +30,7 @@ export class LeafmapComponent implements OnInit, OnChanges, OnDestroy {
 
   options = {
     layers: [
-      //L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      // L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
         {
           maxZoom: 18,
@@ -177,8 +177,8 @@ export class LeafmapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public resize(width: number, height: number) {
-    this.mapDiv.nativeElement.style.height = height - 60 + 'px';
-    this.mapDiv.nativeElement.style.width = width - 30 + 'px';
+    this.mapDiv.nativeElement.style.height = height + 'px';
+    this.mapDiv.nativeElement.style.width = width + 'px';
     this.map.invalidateSize();
   }
 
