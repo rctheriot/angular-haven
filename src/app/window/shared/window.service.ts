@@ -23,6 +23,7 @@ export class WindowService {
     win.id = this.numberOfWindows;
     this.numberOfWindows++;
     WINDOWS.push(win);
+    return win.id;
   }
 
   setWindows(Windows: any[]) {

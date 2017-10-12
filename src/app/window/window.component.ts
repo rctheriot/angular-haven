@@ -42,6 +42,8 @@ export class WindowComponent implements AfterViewInit {
     this.panelDiv.nativeElement.style.height = this.windowPanel.height + 'px';
     this.panelDiv.nativeElement.style.left = this.windowPanel.left + 'px';
     this.panelDiv.nativeElement.style.top = this.windowPanel.top + 'px';
+    this.dragBar.nativeElement.style.backgroundColor = this.windowPanel.color;
+
     this._renderer.setElementStyle(
       this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.windowPanel.backgroundAlpha + ')');
 
@@ -69,6 +71,14 @@ export class WindowComponent implements AfterViewInit {
     document.addEventListener('mouseup', () => { this.stopDragging(); });
     window.addEventListener('resize', () => { this.windowResize() });
     this.panelDiv.nativeElement.addEventListener('mousedown', () => { this.bringWindowForward(); });
+
+    this.dragBar.nativeElement.addEventListener('dblclick', (event) => {
+      if (event.button === 0) {
+        this.maximize();
+      }
+    })
+
+    this.childComponent.resize(this.windowPanel.width - 10, this.windowPanel.height - 40);
 
   }
 
@@ -123,7 +133,6 @@ export class WindowComponent implements AfterViewInit {
       this.panelDiv.nativeElement.style.height = window.innerHeight - 60 + 'px';
       this._renderer.setElementStyle(this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + 1.0 + ')');
       this.maximized = true;
-      this.glyphSize.nativeElement.class = 'glyphicon glyphicon-resize-small';
 
     } else {
       this.panelDiv.nativeElement.style.left = this.saveLeft + 'px';
@@ -137,7 +146,6 @@ export class WindowComponent implements AfterViewInit {
       this._renderer.setElementStyle(
         this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.windowPanel.backgroundAlpha + ')');
       this.maximized = false;
-      this.glyphSize.nativeElement.class = 'glyphicon glyphicon-resize-full';
     }
   }
 
@@ -145,8 +153,8 @@ export class WindowComponent implements AfterViewInit {
     if (this.windowPanel.width !== this.panelDiv.nativeElement.getBoundingClientRect().width ||
       this.windowPanel.height !== this.panelDiv.nativeElement.getBoundingClientRect().height) {
 
-      this.windowPanel.width = this.panelDiv.nativeElement.getBoundingClientRect().width;
-      this.windowPanel.height = this.panelDiv.nativeElement.getBoundingClientRect().height;
+      this.windowPanel.width = this.panelDiv.nativeElement.getBoundingClientRect().width - 10;
+      this.windowPanel.height = this.panelDiv.nativeElement.getBoundingClientRect().height - 10;
       this.childComponent.resize(this.windowPanel.width - 10, this.windowPanel.height - 40);
     }
   }

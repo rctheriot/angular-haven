@@ -49,9 +49,16 @@
   width: 100%;
 }
 
-.map-button {
+.map-show-button {
   width: 100%;
   background-color: rgb(109, 195, 201);
+  color: white;
+  font-size: 16px;
+}
+
+.map-hide-button {
+  width: 100%;
+  background-color: rgb(201, 84, 103);
   color: white;
   font-size: 16px;
 }

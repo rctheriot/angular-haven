@@ -85,6 +85,7 @@ export class PlotlyLineComponent implements OnInit {
                 const hour = profile['hour'];
                 let supply = cap * Number(profile[resource]);
                 if (isNaN(supply) || supply < 0) { supply = 0; }
+                //fossilArray.
 
 
                 newLine.x.push(hour);

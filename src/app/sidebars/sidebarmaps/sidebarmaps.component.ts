@@ -11,7 +11,8 @@ import {
 
 import { WindowPanel } from '../../window/shared/windowPanel';
 import { WindowService } from '../../window/shared/window.service';
-import { LeaflayersService } from '../../leaflet/leaflayers.service';
+import { LeafMapService } from '../../leaflet/leafmap.service';
+import { Observable } from 'rxjs/Observable';
 
 
 @Component({
@@ -35,46 +36,40 @@ export class SidebarmapsComponent implements OnInit {
 
   state = 'inactive';
 
+  mapActive = false;
+
   layers: any;
   selLayer: any;
+  mapWindowId: number;
 
-  constructor(private windowService: WindowService, private leafService: LeaflayersService) { }
+  constructor(private windowService: WindowService, private leafService: LeafMapService) { }
 
   ngOnInit() {
-    this.leafService.getLayers().then(layers => { this.layers = layers });
+    this.leafService.layersObs.subscribe((layers) => { this.layers = layers; });
+    this.leafService.mapEnabledObs.subscribe((mapStatus) => { this.mapActive = mapStatus; })
   }
 
-  createMap() {
-    const newWin = new WindowPanel('Map', `leafletmap`, '');
-    this.windowService.addWindow(newWin);
+  showMap() {
+    const newWin = new WindowPanel('Map', `leafletmap`, '', '#C95467');
+    this.mapWindowId = this.windowService.addWindow(newWin);
+    this.leafService.showMap();
+  }
+
+  hideMap() {
+    this.windowService.removeWindow(this.mapWindowId);
+    this.leafService.hideMap();
   }
 
   toggleMenu() {
     this.state = (this.state === 'inactive' ? 'active' : 'inactive');
   }
 
-  showDOD(event) {
-    this.leafService.dod = event.checked;
-  }
-
-  showFlood(event) {
-    this.leafService.flood = event.checked;
-  }
-
-  showAgr(event) {
-    this.leafService.agr = event.checked;
-  }
-
-  showLandUse(event) {
-    this.leafService.landuse = event.checked;
-  }
-
-  showParks(event) {
-    this.leafService.parks = event.checked;
-  }
-
-  showLava(event) {
-    this.leafService.lava = event.checked;
+  toggleLayer(event) {
+    if (event.checked) {
+      this.leafService.showLayer(event.source.name);
+    } else {
+      this.leafService.hideLayer(event.source.name);
+    }
   }
 
 }

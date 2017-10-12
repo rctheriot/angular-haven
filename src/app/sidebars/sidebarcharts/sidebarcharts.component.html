@@ -5,28 +5,44 @@
   </div>
 
   <div class="row">
-    <div class="col-sm">
-      <md-select placeholder="Scenario" [(ngModel)]="selScenario" [ngModelOptions]="{standalone: true}" class="input-field">
-        <md-option *ngFor="let scenario of scenarios" [value]="scenario">{{ scenario }}</md-option>
-      </md-select>
-    </div>
 
     <div class="col-sm">
-      <md-select placeholder="Graph" [(ngModel)]="selChart" [ngModelOptions]="{standalone: true}" class="input-field">
-        <md-option *ngFor="let chart of charts" [value]="chart">{{ chart }}</md-option>
-      </md-select>
-    </div>
+      <form>
 
-    <div class="col-sm">
-      <md-form-field class="example-full-width" class="input-field">
-        <input mdInput [min]="minDate" [max]="maxDate" [mdDatepicker]="picker" (dateChange)="dateChange($event)" placeholder="Choose a date">
-        <md-datepicker-toggle mdSuffix [for]="picker"></md-datepicker-toggle>
-        <md-datepicker [startAt]="startDate" #picker></md-datepicker>
-      </md-form-field>
-    </div>
+        <p matTooltip="Renewable Portfolio Standard" matTooltipPosition="after" class="percentValue">RPS {{ selRPS }}%</p>
+        <p matTooltip="Renewable Energy Percent" matTooltipPosition="after" class="percentValue">REP {{ selREP }}%</p>
+        <p matTooltip="Selected Year" matTooltipPosition="after" class="percentValue">Year {{ selYear }}</p>
 
-    <div class="col-sm">
-      <button md-raised-button (click)="createWindow()" class="add-button">Add Window</button>
+        <mat-slider *ngIf="selModel == 'RPS'" [min]="sliderRPSMin" [max]="sliderRPSMax" step="1" [value]="selRPS" (input)="sliderRPSChange($event)"></mat-slider>
+        <mat-slider *ngIf="selModel == 'REP'" [min]="sliderREPMin" [max]="sliderREPMax" step="1" [value]="selREP" (input)="sliderREPChange($event)"></mat-slider>
+        <mat-slider *ngIf="selModel == 'Year'" [min]="sliderYearMin" [max]="sliderYearMax" step="1" [value]="selYear" (input)="sliderYearChange($event)"></mat-slider>
+
+        <mat-radio-group labelPosition="after" required="true" (change)="radioChange($event)">
+          <mat-radio-button value="RPS">RPS</mat-radio-button>
+          <mat-radio-button value="REP">REP</mat-radio-button>
+          <mat-radio-button checked="true"  value="Year">Year</mat-radio-button>
+        </mat-radio-group>
+
+        <hr>
+        <p class="percentValue">{{ titleDate() }}</p>
+
+        <mat-slider [min]="sliderDayMin" [max]="sliderDayMax" step="1" [value]="selDay" (input)="sliderDayChange($event)"></mat-slider>
+
+        <mat-form-field>
+          <mat-select required placeholder="Scenario" [(ngModel)]="selScenario" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let scenario of scenarios" [value]="scenario">{{ scenario }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-select required placeholder="Graph" [(ngModel)]="selChart" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let chart of charts" [value]="chart">{{ chart }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button (click)="createWindow()" class="add-button">Add Window</button>
+
+      </form>
     </div>
 
   </div>

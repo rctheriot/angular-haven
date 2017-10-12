@@ -12,8 +12,11 @@ import {
 import { WindowPanel } from '../../window/shared/windowPanel';
 import { WindowService } from '../../window/shared/window.service';
 
-import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 import { AuthService } from '../../auth.service';
+import { Observable } from 'rxjs/Observable';
+
+import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'app-sidebaraccount',
@@ -36,16 +39,27 @@ export class SidebaraccountComponent implements OnInit {
 
   shareSessionEmail: string;
   sessionsName: string;
-  selSession: string;
+  selSession = 'asdf';
 
   state = 'inactive';
 
-  sessions: FirebaseListObservable<any>;
+  sessions: any[];
 
-  constructor(private windowService: WindowService, private db: AngularFireDatabase, private auth: AuthService) { }
+  constructor(private windowService: WindowService, private db: AngularFireDatabase, private auth: AuthService) {
+    const itemsRef = db.list(`sessions/${this.auth.getId()}`);
+    itemsRef.snapshotChanges().map(actions => {
+      return actions.map(action => {
+        const data = action.payload.val();
+        const $key = action.payload.key;
+        return { $key, ...data };
+      });
+    }).subscribe(items => {
+      this.sessions = items;
+    });
+  }
 
   ngOnInit() {
-    this.sessions = this.db.list(`sessions/${this.auth.getId()}`);
+
   }
 
   toggleMenu() {
@@ -54,17 +68,16 @@ export class SidebaraccountComponent implements OnInit {
 
   saveSession() {
     this.windowService.getWindows().then(windows => {
-      this.sessions.push({name: this.sessionsName, session: windows});
+      this.db.list(`sessions/${this.auth.getId()}`).push({ name: this.sessionsName, session: windows });
     });
   }
 
   loadSession() {
-    const dbitems = this.db.object(`/sessions/${this.auth.getId()}/${this.selSession}/session/`, { preserveSnapshot: true });
     const items = [];
-    dbitems.subscribe(snapshots => {
+    firebase.database().ref(`/sessions/${this.auth.getId()}/${this.selSession}/session/`).once('value').then((snapshots) => {
       snapshots.forEach(snapshot => {
         items.push(snapshot.val());
-      });
+      })
       this.windowService.setWindows(items);
     });
   }

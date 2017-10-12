@@ -4,7 +4,6 @@
     <button class="navbarButton" (click)="removeWindow()"><span class="glyphicon glyphicon-remove"></span></button>
     <button class="navbarButton" (click)="incAlpha()"><span class="glyphicon glyphicon-plus"></span></button>
     <button class="navbarButton" (click)="decAlpha()"><span class="glyphicon glyphicon-minus"></span></button>
-    <button class="navbarButton" (click)="maximize()"><span #glyphSize class="glyphicon" [ngClass]="{'glyphicon-resize-full': !maximized, 'glyphicon-resize-small': maximized }"></span></button>
   </div>
   <div #panelBody class="panel-body">
     <app-plotly-chart #child *ngIf="windowPanel.bodyType == 'plotly'" [query]='windowPanel.query'></app-plotly-chart>

@@ -2,11 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import {
-  MaterialModule,
-  MdDatepickerModule,
-  MdNativeDateModule,
-  MdSelectModule } from '@angular/material';
+import { AppMaterialModules } from '../material.module';
 
 import { SidebarchartsComponent } from './sidebarcharts/sidebarcharts.component';
 import { SidebaraccountComponent } from './sidebaraccount/sidebaraccount.component';
@@ -17,10 +13,7 @@ import { SidebarmapsComponent } from './sidebarmaps/sidebarmaps.component';
     CommonModule,
     FormsModule,
     BrowserAnimationsModule,
-    MaterialModule,
-    MdDatepickerModule,
-    MdNativeDateModule,
-    MdSelectModule,
+    AppMaterialModules,
   ],
   declarations: [
     SidebarchartsComponent,

@@ -1,34 +1,23 @@
 <div id="content" [@movePanel]='state' class="container sidebar">
 
   <div (click)="toggleMenu()" class="menuButton">
-    <div class="menuButton-text">Maps</div>
+    <div class="menuButton-text">Map</div>
   </div>
 
   <div class="row">
 
-    <div class="col-sm">
-      <button md-raised-button (click)="createMap()" class="map-button">Show Map</button>
+    <div *ngIf="!mapActive" class="col-sm">
+      <button mat-raised-button (click)="showMap()" class="map-show-button">Show Map</button>
     </div>
+
+    <div *ngIf="mapActive" class="col-sm">
+        <button mat-raised-button (click)="hideMap()" class="map-hide-button">Hide Map</button>
+      </div>
 
     <hr>
 
-    <div class="col-sm">
-      <md-slide-toggle (change)="showDOD($event)">DOD Layer</md-slide-toggle>
-    </div>
-    <div class="col-sm">
-      <md-slide-toggle (change)="showFlood($event)">Flood Zones</md-slide-toggle>
-    </div>
-    <div class="col-sm">
-      <md-slide-toggle (change)="showAgr($event)">Agricultural</md-slide-toggle>
-    </div>
-    <div class="col-sm">
-      <md-slide-toggle (change)="showLandUse($event)">Land Use</md-slide-toggle>
-    </div>
-    <div class="col-sm">
-      <md-slide-toggle (change)="showParks($event)">State Parks</md-slide-toggle>
-    </div>
-    <div class="col-sm">
-      <md-slide-toggle (change)="showLava($event)">Lava Flow</md-slide-toggle>
+    <div class="col-sm" *ngFor="let layer of layers">
+      <mat-slide-toggle name="{{layer.name}}" (change)="toggleLayer($event)">{{ layer.name }}</mat-slide-toggle>
     </div>
 
   </div>

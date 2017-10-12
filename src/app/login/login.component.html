@@ -1,20 +1,24 @@
 <div class="row">
   <div class="col-lg-1 col-centered">
 
-    <md-card class="example-card">
-      <img md-card-image src="./assets/images/haventextlogo.png">
-      <md-card-content>
-        <md-input-container class="input-field">
-          <input mdInput placeholder="Email" type="email" [(ngModel)]="email">
-        </md-input-container>
-        <md-input-container class="input-field">
-          <input mdInput placeholder="Password" type="password" [(ngModel)]="password">
-        </md-input-container>
-      </md-card-content>
-      <button (click)="login()" class="login-button" md-raised-button>Login</button>
+    <mat-card class="example-card">
+      <img mat-card-image src="./assets/images/haventextlogo.png">
+      <mat-card-content>
+        <form>
+          <mat-form-field class="input-field">
+            <input matInput placeholder="Email" type="email" [(ngModel)]="email" name="email">
+          </mat-form-field>
+        </form>
+        <form>
+          <mat-form-field class="input-field">
+            <input matInput placeholder="Password" type="password" [(ngModel)]="password" name="password">
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+      <button (click)="login()" class="login-button" mat-raised-button>Login</button>
       <hr>
-      <button (click)="createAccount()" class="create-button" md-raised-button>Create</button>
-    </md-card>
+      <button (click)="createAccount()" class="create-button" mat-raised-button>Create</button>
+    </mat-card>
 
   </div>
 </div>

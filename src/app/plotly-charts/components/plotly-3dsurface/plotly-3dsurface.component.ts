@@ -23,6 +23,7 @@ export class Plotly3dsurfaceComponent implements OnInit {
 
   ngOnInit() {
     this.createChart(this.query);
+
   }
 
   createChart(query: PlotlyQuery) {
