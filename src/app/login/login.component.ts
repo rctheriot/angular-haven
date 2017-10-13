@@ -15,10 +15,12 @@ export class LoginComponent {
   password: string;
 
   constructor(private authService: AuthService) {
+    this.login();
   }
 
   login() {
-    this.authService.signinUser(this.email, this.password);
+    //this.authService.signinUser(this.email, this.password);
+    this.authService.signinUser('lava2@gmail.com', 'asdfasdf');
   }
 
   createAccount() {

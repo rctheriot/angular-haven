@@ -9,25 +9,36 @@
     <div class="col-sm">
       <form>
 
-        <p matTooltip="Renewable Portfolio Standard" matTooltipPosition="after" class="percentValue">RPS {{ selRPS }}%</p>
-        <p matTooltip="Renewable Energy Percent" matTooltipPosition="after" class="percentValue">REP {{ selREP }}%</p>
-        <p matTooltip="Selected Year" matTooltipPosition="after" class="percentValue">Year {{ selYear }}</p>
+        <div class="col-sm">
+          <button  mat-raised-button *ngIf="selModel == 'RPS'" matTooltip="Renewable Portfolio Standard" matTooltipPosition="after" color="primary" value="RPS"
+            (click)="selChange('RPS')" class="chart-button">RPS {{ selRPS }}%</button>
+            <button mat-raised-button *ngIf="selModel != 'RPS'" matTooltip="Renewable Portfolio Standard" matTooltipPosition="after" color="accent" value="RPS"
+            (click)="selChange('RPS')" class="chart-button">RPS {{ selRPS }}%</button>
+        </div>
 
-        <mat-slider *ngIf="selModel == 'RPS'" [min]="sliderRPSMin" [max]="sliderRPSMax" step="1" [value]="selRPS" (input)="sliderRPSChange($event)"></mat-slider>
-        <mat-slider *ngIf="selModel == 'REP'" [min]="sliderREPMin" [max]="sliderREPMax" step="1" [value]="selREP" (input)="sliderREPChange($event)"></mat-slider>
-        <mat-slider *ngIf="selModel == 'Year'" [min]="sliderYearMin" [max]="sliderYearMax" step="1" [value]="selYear" (input)="sliderYearChange($event)"></mat-slider>
+        <div class="col-sm">
+          <button mat-raised-button  *ngIf="selModel == 'REP'" matTooltip="Renewable Energy Percent" matTooltipPosition="after" color="primary" (click)="selChange('REP')"
+            class="chart-button">RE {{ selREP }}%</button>
+            <button mat-raised-button  *ngIf="selModel != 'REP'" matTooltip="Renewable Energy Percent" matTooltipPosition="after" color="accent" (click)="selChange('REP')"
+            class="chart-button">RE {{ selREP }}%</button>
+        </div>
 
-        <mat-radio-group labelPosition="after" required="true" (change)="radioChange($event)">
-          <mat-radio-button value="RPS">RPS</mat-radio-button>
-          <mat-radio-button value="REP">REP</mat-radio-button>
-          <mat-radio-button checked="true"  value="Year">Year</mat-radio-button>
-        </mat-radio-group>
+        <div class="col-sm">
+          <button mat-raised-button color="primary" *ngIf="selModel == 'Year'" (click)="selChange('Year')" class="chart-button">Year {{ selYear }}</button>
+          <button mat-raised-button color="accent" *ngIf="selModel != 'Year'" (click)="selChange('Year')" class="chart-button">Year {{ selYear }}</button>
+        </div>
 
+        <mat-slider *ngIf="selModel == 'RPS'" color='accent' [min]="sliderRPSMin" [max]="sliderRPSMax" step="1" [value]="selRPS"
+          (input)="sliderRPSChange($event)"></mat-slider>
+        <mat-slider *ngIf="selModel == 'REP'" color='accent' [min]="sliderREPMin" [max]="sliderREPMax" step="1" [value]="selREP"
+          (input)="sliderREPChange($event)"></mat-slider>
+        <mat-slider *ngIf="selModel == 'Year'" color='accent' [min]="sliderYearMin" [max]="sliderYearMax" step="1" [value]="selYear"
+          (input)="sliderYearChange($event)"></mat-slider>
+
+        <p class="valueLabel">{{ titleDate() }}</p>
+
+        <mat-slider color='accent' [min]="sliderDayMin" [max]="sliderDayMax" step="1" [value]="selDay" (input)="sliderDayChange($event)"></mat-slider>
         <hr>
-        <p class="percentValue">{{ titleDate() }}</p>
-
-        <mat-slider [min]="sliderDayMin" [max]="sliderDayMax" step="1" [value]="selDay" (input)="sliderDayChange($event)"></mat-slider>
-
         <mat-form-field>
           <mat-select required placeholder="Scenario" [(ngModel)]="selScenario" [ngModelOptions]="{standalone: true}" class="input-field">
             <mat-option *ngFor="let scenario of scenarios" [value]="scenario">{{ scenario }}</mat-option>
@@ -40,7 +51,7 @@
           </mat-select>
         </mat-form-field>
 
-        <button mat-raised-button (click)="createWindow()" class="add-button">Add Window</button>
+        <button color="primary" mat-raised-button (click)="createWindow()" class="chart-button">Add Window</button>
 
       </form>
     </div>

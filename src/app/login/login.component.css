@@ -11,18 +11,17 @@
 
 .login-button {
   width: 100%;
-  background-color: rgb(89, 158, 92);;
   color: white;
-  font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
 }
 
 .create-button {
   width: 100%;
-  background-color: rgb(40, 96, 141);
   color: white;
-  font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
+  letter-spacing: 1px;
 }
 
 .input-field {

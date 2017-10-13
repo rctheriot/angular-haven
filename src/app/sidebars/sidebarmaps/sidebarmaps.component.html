@@ -7,17 +7,17 @@
   <div class="row">
 
     <div *ngIf="!mapActive" class="col-sm">
-      <button mat-raised-button (click)="showMap()" class="map-show-button">Show Map</button>
+      <button color='primary' mat-raised-button (click)="showMap()" class="map-button">Show Map</button>
     </div>
 
     <div *ngIf="mapActive" class="col-sm">
-        <button mat-raised-button (click)="hideMap()" class="map-hide-button">Hide Map</button>
-      </div>
+      <button color='warn' mat-raised-button (click)="hideMap()" class="map-button">Hide Map</button>
+    </div>
 
     <hr>
 
-    <div class="col-sm" *ngFor="let layer of layers">
-      <mat-slide-toggle name="{{layer.name}}" (change)="toggleLayer($event)">{{ layer.name }}</mat-slide-toggle>
+    <div class="col-sm" *ngFor="let layer of layers;">
+      <mat-slide-toggle ngClass="slide-{{layer.id}}" name="{{layer.name}}" (change)="toggleLayer($event)">{{ layer.name }}</mat-slide-toggle>
     </div>
 
   </div>

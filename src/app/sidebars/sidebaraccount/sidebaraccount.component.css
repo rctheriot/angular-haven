@@ -14,7 +14,7 @@
   position: relative;
   left: 204px;
   transform: translate(0%, -50%);
-  background-color: rgb(109, 195, 201);
+  background-color: #a9b6bc;
   color:white;
   top: 50%;
   width: 30px;
@@ -26,8 +26,10 @@
 }
 .menuButton-text
 {
-  font-style: bold;
-  transform: translate(-2px, 52px) rotate(-90deg);
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  transform: translate(-2px, 55px) rotate(-90deg);
 }
 .menuButton:hover
 {
@@ -48,38 +50,10 @@
   width: 100%;
 }
 
-.share-session-button {
+.session-button {
   width: 100%;
-  background-color: rgb(219, 124, 61);
   color: white;
-  font-size: 16px;
-}
-
-.load-session-button {
-  width: 100%;
-  background-color: rgb(109, 195, 201);
-  color: white;
-  font-size: 16px;
-}
-
-.save-session-button {
-  width: 100%;
-  background-color: rgb(89, 158, 92);
-  color: white;
-  font-size: 16px;
-}
-
-.delete-session-button {
-  width: 100%;
-  background-color: rgb(201, 84, 103);
-  color: white;
-  font-size: 16px;
-}
-
-.clear-session-button {
-  width: 100%;
-  background-color: rgb(163, 101, 214);
-  color: white;
-  font-size: 16px;
+  font-size: 18px;
+  letter-spacing: 1px;
 }
 

@@ -14,7 +14,7 @@
   position: relative;
   left: 204px;
   transform: translate(0%, -50%);
-  background-color: rgb(89, 158, 92);
+  background-color: #a9b6bc;
   color:white;
   top: 50%;
   width: 30px;
@@ -26,8 +26,10 @@
 }
 .menuButton-text
 {
-  font-style: bold;
-  transform: translate(-2px, 45px) rotate(-90deg);
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  transform: translate(-2px, 48px) rotate(-90deg);
 }
 .menuButton:hover
 {
@@ -48,28 +50,27 @@
   width: 100%;
 }
 
-.add-button {
+.chart-button {
   width: 100%;
-  background-color: rgb(89, 158, 92);
   color: white;
-  font-size: 16px;
-}
-.capcity-button {
-  width: 100%;
-  background-color: rgb(175, 75, 75);
-  color: white;
-  font-size: 16px;
+  font-size: 18px;
+  letter-spacing: 1px;
 }
 
 mat-slider {
   width: 100%;
 }
 
-.percentValue {
+.valueLabel {
+  color: white;
   font-style: bold;
   font-size: 20px;
   text-align: center;
   margin: 0px;
+  background: #a9b6bc;
+  margin-bottom: 7px;
+  border-radius: 2px;
+  box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);  
 }
 
 mat-radio-group {

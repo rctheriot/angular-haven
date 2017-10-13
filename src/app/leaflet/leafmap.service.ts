@@ -15,19 +15,18 @@ export class LeafMapService {
   mapEnabledObs = new Subject<boolean>();
 
   leafmap: any;
-  colorNumber = 0;
-  colorScheme = ['#dd1c5c', '#ee7733', '#7ae380', '#40ecbe', '#44aaff', '#8844ff', '#8844ff'];
+  colorScheme = ['#EC5f67', '#F99157', '#FAC863', '#99C794', '#6699CC', '#C594C5', '#AB7967'];
 
   constructor() {
     this.mapEnabled = false;
     this.mapEnabledObs.next(this.mapEnabled);
-    this.loadFeatureLayer('mapdata/DOD_Parcels.json', this.colorScheme[this.colorNumber++], 'DOD');
-    this.loadFeatureLayer('mapdata/Flood_Zones.json', this.colorScheme[this.colorNumber++], 'Flood Zones');
-    this.loadFeatureLayer('mapdata/Important_Agricultural_Lands_IAL.json', this.colorScheme[this.colorNumber++], 'Agricultural');
-    this.loadFeatureLayer('mapdata/Oahu_Land_Use_1998.json', this.colorScheme[this.colorNumber++], 'Land Use');
-    this.loadFeatureLayer('mapdata/Parks_State_Polygon.json', this.colorScheme[this.colorNumber++], 'State Parks');
-    this.loadFeatureLayer('mapdata/Volcano_Lava_Flow_Hazard_Zones.json', this.colorScheme[this.colorNumber++], 'Lava Flow');
-    this.loadGeometryLayer('mapdata/PVdoc.json', this.colorScheme[this.colorNumber++], 'PV Doc');
+    this.loadFeatureLayer('mapdata/DOD_Parcels.json', 'DOD', 0);
+    this.loadGeometryLayer('mapdata/PVdoc.json', 'PV Doc', 1);
+    this.loadFeatureLayer('mapdata/Volcano_Lava_Flow_Hazard_Zones.json', 'Lava Flow', 2);
+    this.loadFeatureLayer('mapdata/Important_Agricultural_Lands_IAL.json', 'Agricultural', 3);
+    this.loadFeatureLayer('mapdata/Flood_Zones.json', 'Flood Zones', 4);
+    this.loadFeatureLayer('mapdata/Oahu_Land_Use_1998.json', 'Land Use', 5);
+    this.loadFeatureLayer('mapdata/Parks_State_Polygon.json', 'State Parks', 6);
   }
 
   hideMap() {
@@ -58,24 +57,28 @@ export class LeafMapService {
   }
 
   hideLayer(layername: any) {
-    this.layers.forEach(el => {
-      if (el.name === layername) {
-        el.active = false;
-        this.leafmap.removeLayer(el.layer);
-      }
-    });
+    if (this.leafmap) {
+      this.layers.forEach(el => {
+        if (el.name === layername) {
+          el.active = false;
+          this.leafmap.removeLayer(el.layer);
+        }
+      });
+    }
   }
 
   showLayer(layername: any) {
-    this.layers.forEach(el => {
-      if (el.name === layername) {
-        el.active = true;
-        this.leafmap.addLayer(el.layer);
-      }
-    });
+    if (this.leafmap) {
+      this.layers.forEach(el => {
+        if (el.name === layername) {
+          el.active = true;
+          this.leafmap.addLayer(el.layer);
+        }
+      });
+    }
   }
 
-  loadGeometryLayer(mapUrl: string, color: string, name: string) {
+  loadGeometryLayer(mapUrl: string, name: string, id: number) {
     const geojsonFeature = {
       'type': 'GeometryColleciton',
       'features': []
@@ -94,11 +97,11 @@ export class LeafMapService {
         });
 
         const newLayer = (L.geoJSON(geojsonFeature, {
-          style: (feature) => ({ color: color }),
+          style: (feature) => ({ color: this.colorScheme[id] }),
           onEachFeature: (feature, layer) => { this.onEachFeature(feature, layer) },
         }));
 
-      this.addLayer({name: name, layer: newLayer, active: false});
+        this.addLayer({ name: name, layer: newLayer, active: false, id: id });
 
       };
       xhr.open('GET', url);
@@ -119,7 +122,7 @@ export class LeafMapService {
     });
   }
 
-  loadFeatureLayer(mapUrl: string, color: string, name: string) {
+  loadFeatureLayer(mapUrl: string, name: string, id: number) {
     const geojsonFeature = {
       'type': 'FeatureCollection',
       'features': []
@@ -140,11 +143,11 @@ export class LeafMapService {
         });
 
         const newLayer = (L.geoJSON(geojsonFeature, {
-          style: (feature) => ({ color: color }),
+          style: (feature) => ({ color: this.colorScheme[id] }),
           onEachFeature: (feature, layer) => { this.onEachFeature(feature, layer) },
         }));
 
-      this.addLayer({name: name, layer: newLayer, active: false});
+        this.addLayer({ name: name, layer: newLayer, active: false, id: id });
 
       };
       xhr.open('GET', url);

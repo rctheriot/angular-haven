@@ -136,8 +136,8 @@ export class SidebarchartsComponent implements OnInit {
     this.queryDay = date.getDate();
   }
 
-  radioChange(event: any) {
-    this.selModel = event.value;
+  selChange(model: any) {
+    this.selModel = model;
   }
 
   sliderRPSChange(event: any) {
