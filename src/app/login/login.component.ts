@@ -3,7 +3,6 @@ import { AuthService } from '../auth.service';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldControl } from '@angular/material';
 
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -15,10 +14,12 @@ export class LoginComponent {
   password: string;
 
   constructor(private authService: AuthService) {
+    this.login();
   }
 
   login() {
-    this.authService.signinUser(this.email, this.password);
+    this.authService.signinUser('havendev@gmail.com', 'lavalava');
+    // this.authService.signinUser(this.email, this.password);
   }
 
   createAccount() {

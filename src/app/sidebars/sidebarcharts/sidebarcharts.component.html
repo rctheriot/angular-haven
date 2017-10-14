@@ -28,30 +28,42 @@
           <button mat-raised-button color="accent" *ngIf="selModel != 'Year'" (click)="selChange('Year')" class="chart-button">Year {{ selYear }}</button>
         </div>
 
-        <mat-slider *ngIf="selModel == 'RPS'" color='accent' [min]="sliderRPSMin" [max]="sliderRPSMax" step="1" [value]="selRPS"
+        <mat-slider *ngIf="selModel == 'RPS'" color='primary' [min]="sliderRPSMin" [max]="sliderRPSMax" step="1" [value]="selRPS"
           (input)="sliderRPSChange($event)"></mat-slider>
-        <mat-slider *ngIf="selModel == 'REP'" color='accent' [min]="sliderREPMin" [max]="sliderREPMax" step="1" [value]="selREP"
+        <mat-slider *ngIf="selModel == 'REP'" color='primary' [min]="sliderREPMin" [max]="sliderREPMax" step="1" [value]="selREP"
           (input)="sliderREPChange($event)"></mat-slider>
-        <mat-slider *ngIf="selModel == 'Year'" color='accent' [min]="sliderYearMin" [max]="sliderYearMax" step="1" [value]="selYear"
+        <mat-slider *ngIf="selModel == 'Year'" color='primary' [min]="sliderYearMin" [max]="sliderYearMax" step="1" [value]="selYear"
           (input)="sliderYearChange($event)"></mat-slider>
 
         <p class="valueLabel">{{ titleDate() }}</p>
 
-        <mat-slider color='accent' [min]="sliderDayMin" [max]="sliderDayMax" step="1" [value]="selDay" (input)="sliderDayChange($event)"></mat-slider>
-        <hr>
+        <mat-slider color='primary' [min]="sliderDayMin" [max]="sliderDayMax" step="1" [value]="selDay" (input)="sliderDayChange($event)"></mat-slider>
+
+        <mat-form-field>
+          <mat-select required placeholder="Value" [(ngModel)]="selOption" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let option of optionsSelection" [value]="option">{{ option.value }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <mat-form-field>
           <mat-select required placeholder="Scenario" [(ngModel)]="selScenario" [ngModelOptions]="{standalone: true}" class="input-field">
-            <mat-option *ngFor="let scenario of scenarios" [value]="scenario">{{ scenario }}</mat-option>
+            <mat-option *ngFor="let scenario of selOption.scenarios" [value]="scenario">{{ scenario }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field>
-          <mat-select required placeholder="Graph" [(ngModel)]="selChart" [ngModelOptions]="{standalone: true}" class="input-field">
-            <mat-option *ngFor="let chart of charts" [value]="chart">{{ chart }}</mat-option>
+          <mat-select required placeholder="Scope" [(ngModel)]="selScope" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let scope of selOption.scopes" [value]="scope">{{ scope }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field>
+          <mat-select required placeholder="Chart" [(ngModel)]="selChart" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let chart of selOption.charts" [value]="chart">{{ chart }}</mat-option>
           </mat-select>
         </mat-form-field>
 
-        <button color="primary" mat-raised-button (click)="createWindow()" class="chart-button">Add Window</button>
+        <button color="primary" mat-raised-button (click)="createWindow()" class="chart-button">Create Chart</button>
 
       </form>
     </div>

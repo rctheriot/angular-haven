@@ -1,11 +1,10 @@
 export class PlotlyInfo {
   title: string;
-  xaxis: {};
-  yaxis: {};
+  data = [];
   showLegend: boolean;
-  legend: {};
-  type: string;
-  mode: any;
-  data: any[];
+  xaxisLabel: string;
+  xrange: [number, number];
+  yaxisLabel: string;
+  yrange: [number, number];
   layout = {};
 }

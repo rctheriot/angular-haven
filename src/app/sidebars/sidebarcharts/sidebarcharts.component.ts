@@ -37,26 +37,17 @@ export class SidebarchartsComponent implements OnInit {
 
   state = 'inactive';
 
-  selScenario: string;
-  scenarios = [];
-
-  selChart: string;
-  charts = [];
-
   queryYear: number;
   queryMonth: number;
   queryDay: number;
 
   selModel = 'RPS';
-
   selRPS = 100;
   sliderRPSMax = 200;
   sliderRPSMin = 1;
-
   selREP = 50;
   sliderREPMax = 100;
   sliderREPMin = 1;
-
   selYear = 2030;
   sliderYearMax = 2045;
   sliderYearMin = 2016;
@@ -65,22 +56,52 @@ export class SidebarchartsComponent implements OnInit {
   sliderDayMin = 1;
   sliderDayMax = 365;
 
+  selOption: any;
+  selScenario: string;
+  selScope: string;
+  selChart: string;
+
+  scenarios = [];
+
+  optionsSelection = [
+    {
+      value: 'capacity',
+      scenarios: this.scenarios,
+      scopes: ['yearly'],
+      charts: ['line', '3dsurface', 'bar'],
+    },
+    {
+      value: 'demand',
+      scenarios: ['Not Required'],
+      scopes: ['yearly', 'monthly', 'daily', 'hourly'],
+      charts: ['line', '3dsurface', 'bar'],
+    },
+    {
+      value: 'supply',
+      scenarios: this.scenarios,
+      scopes: ['yearly', 'monthly', 'daily', 'hourly'],
+      charts: ['line', '3dsurface', 'bar'],
+    }
+  ]
+
   monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
   rpsValues = [];
   repValues = [];
 
-  colors = ['#6DC3C9', '#599E5C', '#ff944d']
+  colors = ['#2A9D8F', '#E9C46A', '#F4A261']
 
-  constructor(private windowService: WindowService, private chartService: PlotlyChartsService) { }
+  constructor(private windowService: WindowService, private chartService: PlotlyChartsService) {
+    this.selOption = this.optionsSelection[0];
+  }
 
   ngOnInit() {
-    this.charts = this.chartService.getChartTypes();
+
     firebase.database().ref().child(`/scenarios/key/`).once('value').then((scenarios) => {
       scenarios.forEach(scenario => {
         this.scenarios.push(scenario.val().name);
+        this.selScenario = this.selOption.scenarios[0];
       })
-      this.selScenario = this.scenarios[0];
     }).then(() => {
       firebase.database().ref().child(`/rps/`).once('value').then((years) => {
         years.forEach(year => {
@@ -103,16 +124,11 @@ export class SidebarchartsComponent implements OnInit {
 
   createWindow() {
     if (this.selScenario && this.selChart) {
-      const query = new PlotlyQuery();
-      query.chartType = this.selChart;
-      query.year = this.queryYear;
-      query.month = this.queryMonth;
-      query.day = this.queryDay;
-      query.scenario = this.selScenario;
-      const color = this.colors[this.scenarios.indexOf(this.selScenario)];
+      const query = new PlotlyQuery(this.selOption.value, this.selChart, this.selScenario, this.selScope, this.queryYear, this.queryMonth, this.queryDay);
+      const windowColor = this.colors[this.scenarios.indexOf(this.selScenario)];
       const newWin = new WindowPanel(
-        `${this.selScenario.toLocaleUpperCase()} - ${this.titleDate()} ${this.queryYear} - RPS: ${this.selRPS}% - REP: ${this.selREP}%`,
-        'plotly', query, color);
+        `${this.selScenario.toLocaleUpperCase()} - ${this.selOption.value.toLocaleUpperCase()} - ${this.titleDate()} ${this.queryYear} - RPS: ${this.selRPS}% - REP: ${this.selREP}%`,
+        'plotly', query, windowColor);
       this.windowService.addWindow(newWin);
     }
   }

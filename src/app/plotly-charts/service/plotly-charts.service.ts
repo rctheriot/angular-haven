@@ -6,12 +6,30 @@ import { PlotlyQuery } from '../shared/plotlyQuery';
 @Injectable()
 export class PlotlyChartsService {
 
-  chartTypes = ['line', '3dsurface', 'bar'];
+  capacityXRange: [number, number];
+  capacityYRange: [number, number];
 
-  constructor() { }
+  constructor() {
+    this.capacityXRange = [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
+    this.capacityYRange = [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
+   }
 
-  getChartTypes() {
-    return this.chartTypes;
+  getCapacityXRange(range: [number, number]) {
+    let min = Math.min(range[0], this.capacityXRange[0]);
+    let max = Math.max(range[1], this.capacityXRange[1]);
+    min -= ((max - min) * 0.05);
+    max += ((max - min) * 0.05);
+    this.capacityXRange = [min, max];
+    return this.capacityXRange;
   }
+  getCapacityYRange(range: [number, number]) {
+    let min = Math.min(range[0], this.capacityYRange[0]);
+    let max = Math.max(range[1], this.capacityYRange[1]);
+    min -= ((max - min) * 0.05);
+    max += ((max - min) * 0.05);
+    this.capacityYRange = [min, max];
+    return this.capacityYRange;
+  }
+
 
 }
