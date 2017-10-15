@@ -9,21 +9,6 @@
   width: 350px;
 }
 
-.login-button {
-  width: 100%;
-  color: white;
-  font-size: 18px;
-  letter-spacing: 1px;
-  margin-bottom: 20px;
-}
-
-.create-button {
-  width: 100%;
-  color: white;
-  font-size: 18px;
-  letter-spacing: 1px;
-}
-
 .input-field {
   width: 100%;
 }

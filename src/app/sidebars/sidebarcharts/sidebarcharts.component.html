@@ -10,30 +10,23 @@
       <form>
 
         <div class="col-sm">
-          <button  mat-raised-button *ngIf="selModel == 'RPS'" matTooltip="Renewable Portfolio Standard" matTooltipPosition="after" color="primary" value="RPS"
-            (click)="selChange('RPS')" class="chart-button">RPS {{ selRPS }}%</button>
-            <button mat-raised-button *ngIf="selModel != 'RPS'" matTooltip="Renewable Portfolio Standard" matTooltipPosition="after" color="accent" value="RPS"
-            (click)="selChange('RPS')" class="chart-button">RPS {{ selRPS }}%</button>
+          <button appButton mat-raised-button color="primary" *ngIf="selModel == 'RPS'" (click)="selChange('RPS')">RPS {{ selRPS }}%</button>
+          <button appButton mat-raised-button color="accent" *ngIf="selModel != 'RPS'" (click)="selChange('RPS')">RPS {{ selRPS }}%</button>
         </div>
 
         <div class="col-sm">
-          <button mat-raised-button  *ngIf="selModel == 'REP'" matTooltip="Renewable Energy Percent" matTooltipPosition="after" color="primary" (click)="selChange('REP')"
-            class="chart-button">RE {{ selREP }}%</button>
-            <button mat-raised-button  *ngIf="selModel != 'REP'" matTooltip="Renewable Energy Percent" matTooltipPosition="after" color="accent" (click)="selChange('REP')"
-            class="chart-button">RE {{ selREP }}%</button>
+          <button appButton mat-raised-button color="primary" *ngIf="selModel == 'REP'" (click)="selChange('REP')">RE {{ selREP }}%</button>
+          <button appButton mat-raised-button color="accent" *ngIf="selModel != 'REP'" (click)="selChange('REP')">RE {{ selREP }}%</button>
         </div>
 
         <div class="col-sm">
-          <button mat-raised-button color="primary" *ngIf="selModel == 'Year'" (click)="selChange('Year')" class="chart-button">Year {{ selYear }}</button>
-          <button mat-raised-button color="accent" *ngIf="selModel != 'Year'" (click)="selChange('Year')" class="chart-button">Year {{ selYear }}</button>
+          <button appButton mat-raised-button color="primary" *ngIf="selModel == 'Year'" (click)="selChange('Year')">Year {{ selYear }}</button>
+          <button appButton mat-raised-button color="accent" *ngIf="selModel != 'Year'" (click)="selChange('Year')">Year {{ selYear }}</button>
         </div>
 
-        <mat-slider *ngIf="selModel == 'RPS'" color='primary' [min]="sliderRPSMin" [max]="sliderRPSMax" step="1" [value]="selRPS"
-          (input)="sliderRPSChange($event)"></mat-slider>
-        <mat-slider *ngIf="selModel == 'REP'" color='primary' [min]="sliderREPMin" [max]="sliderREPMax" step="1" [value]="selREP"
-          (input)="sliderREPChange($event)"></mat-slider>
-        <mat-slider *ngIf="selModel == 'Year'" color='primary' [min]="sliderYearMin" [max]="sliderYearMax" step="1" [value]="selYear"
-          (input)="sliderYearChange($event)"></mat-slider>
+        <mat-slider *ngIf="selModel == 'RPS'" color='primary' [min]="sliderRPSMin" [max]="sliderRPSMax" step="1" [value]="selRPS" (input)="sliderRPSChange($event)"></mat-slider>
+        <mat-slider *ngIf="selModel == 'REP'" color='primary' [min]="sliderREPMin" [max]="sliderREPMax" step="1" [value]="selREP" (input)="sliderREPChange($event)"></mat-slider>
+        <mat-slider *ngIf="selModel == 'Year'" color='primary' [min]="sliderYearMin" [max]="sliderYearMax" step="1" [value]="selYear" (input)="sliderYearChange($event)"></mat-slider>
 
         <p class="valueLabel">{{ titleDate() }}</p>
 
@@ -63,7 +56,7 @@
           </mat-select>
         </mat-form-field>
 
-        <button color="primary" mat-raised-button (click)="createWindow()" class="chart-button">Create Chart</button>
+        <button appButton mat-raised-button color="primary" (click)="createWindow()">Create Chart</button>
 
       </form>
     </div>

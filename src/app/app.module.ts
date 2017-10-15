@@ -15,7 +15,7 @@ import { AuthGuard } from './auth-guard.service';
 import { environment } from '../environments/environment';
 
 // Material & Leaflet
-import { AppMaterialModules } from './material.module';
+import { AppMaterialModules } from './shared/material.module';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import 'hammerjs';
 
@@ -38,6 +38,8 @@ import { WindowService } from './window/shared/window.service';
 import { LeafMapService } from './leaflet/leafmap.service';
 import { PlotlyChartsService } from './plotly-charts/service/plotly-charts.service';
 
+import { DirectivesModule } from './shared/directives.module'
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -52,6 +54,7 @@ import { PlotlyChartsService } from './plotly-charts/service/plotly-charts.servi
     SidebarsModule,
     AppMaterialModules,
     LeafletModule.forRoot(),
+    DirectivesModule
   ],
   declarations: [
     AppComponent,

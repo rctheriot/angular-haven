@@ -18,7 +18,7 @@ export class WindowPanel {
     this.top = 200;
     this.width = 500;
     this.height = 500;
-    this.backgroundAlpha = 0.5;
+    this.backgroundAlpha = 1.0;
     this.zindex = 0;
     this.color = color;
 

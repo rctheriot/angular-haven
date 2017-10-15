@@ -1,11 +1,14 @@
 .panel {
-  width: 200px;
-  height: 200px;
+  min-width: 350px;
+  min-height: 300px;
   top: 150px;
   left: 100px;
   position: absolute;
   background-color: rgba(255, 255, 255, 0.5);
   margin: 0;
+  box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12); 
+  border: 0px; 
+
 }
 
 .panel-body {
@@ -17,40 +20,93 @@
 }
 
 .panel-default>.panel-heading-custom {
-  background-color: rgba(108, 138, 164, 0.88);
+  background-color: #afafaf;
   color: #fff;
   height: 30px;
   padding: 5px;
+  border: none;
 }
 
-.panel-default>.panel-heading-custom:hover {
+.panel-default>.panel-heading-custom {
+  padding-left: 0px;
+}
+
+.title:hover {
   cursor: pointer;
 }
 
+.title {
+  position: relative;
+  left: 0px;
+  top: 0px;
+  background-color: #a9b6bc;
+  color:white;
+  width: 200px;
+  height: 30px;
+  transform: translateY(-5px);
+  border-radius: 4px 0px 50px 0px;
+  box-shadow: 8px 0px 0px 0px rgba(0,0,0,.12);
+  border-style: none;
+  border-right: 3px solid white;
+  text-align: left;
+  float: left;
+  vertical-align: middle;
+  padding-left: 8px;
+}
+.title-text
+{
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  transform: translateY(2px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 25px;
+}
 
-.navbarButton {
+.navbarButton.maximize.mat-fab {
+  background-color: #3aa056; 
+}
+
+.navbarButton.mat-fab {
   height: 20px; 
   width: 20px;
   float: right;
-  margin-left: 3px;
-  border-radius: 10%;
-  border-color: transparent;
+  line-height: 1.95;
+  margin-left: 5px;
+  box-shadow: none;
+}
+::ng-deep  .navbarButton.mat-fab > .mat-button-wrapper{
+  padding: 0px !important;
+}
+::ng-deep  .navbarButton.mat-fab > .mat-button-wrapper > .mat-icon {
+  height: 20px;
+  width: 20px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
-.glyphicon {
-  font-size: 12px;
-  transform: translate(-30%, -25%);
+.mat-slider {
+  height: 20px;
+  width: 128px;
+  padding: 0px;
+  float: right;
+  transform: translateY(-1.5px);
+  margin-right: 3px;
+}
+::ng-deep .transparentSlider.mat-slider-horizontal > .mat-slider-wrapper {
+  top: 10px !important;
 }
 
-.glyphicon-remove {
-  color: #F37E7E;
+
+::ng-deep .mat-accent .mat-slider-track-fill, .mat-accent .mat-slider-thumb, .mat-accent .mat-slider-thumb-label {
+  background-color: #c6ced2 !important;
 }
 
-.glyphicon-plus {
-  color: rgba(97, 97, 97, 0.85);
+::ng-deep .transparentSlider.mat-slider-horizontal > .mat-slider-wrapper > .mat-slider-track-wrapper > .mat-slider-track-background {
+  background-color: #f1f3f4;
 }
 
-.glyphicon-minus {
-  color: rgba(97, 97, 97, 0.35);
+::ng-deep .transparentSlider.mat-slider-horizontal > .mat-slider-wrapper > .mat-slider-thumb-container > .mat-slider-thumb {
+  background-color: #ffb92c;
 }
-

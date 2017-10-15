@@ -15,8 +15,9 @@
           </mat-form-field>
         </form>
       </mat-card-content>
-      <button (click)="login()" color="primary" class="login-button" mat-raised-button>Login</button>
-      <button (click)="createAccount()" color="accent" class="create-button" mat-raised-button>Create</button>
+      <button appButton mat-raised-button (click)="login()" color="primary" class="login-button" >Login</button>
+      <hr>
+      <button appButton mat-raised-button (click)="createAccount()" color="accent" class="create-button" >Create</button>
     </mat-card>
 
   </div>

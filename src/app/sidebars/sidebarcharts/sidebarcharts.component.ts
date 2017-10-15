@@ -65,22 +65,22 @@ export class SidebarchartsComponent implements OnInit {
 
   optionsSelection = [
     {
-      value: 'capacity',
+      value: 'Capacity',
       scenarios: this.scenarios,
-      scopes: ['yearly'],
-      charts: ['line', '3dsurface', 'bar'],
+      scopes: ['Yearly'],
+      charts: ['Line', '3DSurface', 'Bar'],
     },
     {
-      value: 'demand',
+      value: 'Demand',
       scenarios: ['Not Required'],
-      scopes: ['yearly', 'monthly', 'daily', 'hourly'],
-      charts: ['line', '3dsurface', 'bar'],
+      scopes: ['Yearly', 'Monthly', 'Daily', 'Hourly'],
+      charts: ['Line', '3DSurface', 'Bar'],
     },
     {
-      value: 'supply',
+      value: 'Supply',
       scenarios: this.scenarios,
-      scopes: ['yearly', 'monthly', 'daily', 'hourly'],
-      charts: ['line', '3dsurface', 'bar'],
+      scopes: ['Yearly', 'Monthly', 'Daily', 'Hourly'],
+      charts: ['Line', '3DSurface', 'Bar'],
     }
   ]
 
@@ -89,7 +89,7 @@ export class SidebarchartsComponent implements OnInit {
   rpsValues = [];
   repValues = [];
 
-  colors = ['#2A9D8F', '#E9C46A', '#F4A261']
+  colors = ['#6699CC', '#99C794', '#F99157']
 
   constructor(private windowService: WindowService, private chartService: PlotlyChartsService) {
     this.selOption = this.optionsSelection[0];
@@ -126,9 +126,7 @@ export class SidebarchartsComponent implements OnInit {
     if (this.selScenario && this.selChart) {
       const query = new PlotlyQuery(this.selOption.value, this.selChart, this.selScenario, this.selScope, this.queryYear, this.queryMonth, this.queryDay);
       const windowColor = this.colors[this.scenarios.indexOf(this.selScenario)];
-      const newWin = new WindowPanel(
-        `${this.selScenario.toLocaleUpperCase()} - ${this.selOption.value.toLocaleUpperCase()} - ${this.titleDate()} ${this.queryYear} - RPS: ${this.selRPS}% - REP: ${this.selREP}%`,
-        'plotly', query, windowColor);
+      const newWin = new WindowPanel( `${this.selScenario.toUpperCase()} - ${this.selOption.value}`, 'plotly', query, windowColor);
       this.windowService.addWindow(newWin);
     }
   }

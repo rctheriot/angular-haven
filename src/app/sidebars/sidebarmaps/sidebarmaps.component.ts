@@ -50,7 +50,7 @@ export class SidebarmapsComponent implements OnInit {
   }
 
   showMap() {
-    const newWin = new WindowPanel('Map', `leafletmap`, '', '#a9b6bc');
+    const newWin = new WindowPanel('Map', `leafletmap`, '', '#EC5f67');
     this.mapWindowId = this.windowService.addWindow(newWin);
     this.leafService.showMap();
   }

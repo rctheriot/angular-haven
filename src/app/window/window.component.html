@@ -1,9 +1,20 @@
 <div #panelDiv class="panel panel-default resizable">
-  <div #dragBar class="panel-heading panel-heading-custom">
-    {{ windowPanel.title }} 
-    <button class="navbarButton" (click)="removeWindow()"><span class="glyphicon glyphicon-remove"></span></button>
-    <button class="navbarButton" (click)="incAlpha()"><span class="glyphicon glyphicon-plus"></span></button>
-    <button class="navbarButton" (click)="decAlpha()"><span class="glyphicon glyphicon-minus"></span></button>
+  <div class="panel-heading panel-heading-custom">
+
+    <div #titleBar class="title">
+      <div class="title-text">{{ windowPanel.title }}</div>
+    </div>
+
+    <button mat-fab color="warn" (click)="removeWindow()" class="navbarButton">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <button mat-fab (click)="maximize()" class="navbarButton maximize">
+      <mat-icon>crop_square</mat-icon>
+    </button>
+
+    <mat-slider class="transparentSlider" color='accent' [min]="0" [max]="1" step="0.01" [value]="windowPanel.backgroundAlpha" (input)="transparentSlider($event)"></mat-slider>
+
   </div>
   <div #panelBody class="panel-body">
     <app-plotly-chart #child *ngIf="windowPanel.bodyType == 'plotly'" [query]='windowPanel.query'></app-plotly-chart>

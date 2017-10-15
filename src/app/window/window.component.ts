@@ -13,10 +13,9 @@ export class WindowComponent implements AfterViewInit {
   static lastClickDiv: any;
   static windowDivs = [];
 
-  @ViewChild('dragBar') dragBar;
   @ViewChild('panelDiv') panelDiv;
   @ViewChild('child') childComponent;
-  @ViewChild('glyphSize') glyphSize;
+  @ViewChild('titleBar') titleDiv;
   @ViewChild('panelBody') panelBody;
 
   @Input() public title: string;
@@ -42,7 +41,8 @@ export class WindowComponent implements AfterViewInit {
     this.panelDiv.nativeElement.style.height = this.windowPanel.height + 'px';
     this.panelDiv.nativeElement.style.left = this.windowPanel.left + 'px';
     this.panelDiv.nativeElement.style.top = this.windowPanel.top + 'px';
-    this.dragBar.nativeElement.style.backgroundColor = this.windowPanel.color;
+     this.titleDiv.nativeElement.style.backgroundColor = this.windowPanel.color;
+    this.titleDiv.nativeElement.style.width = this.windowPanel.width - 200 + 'px';
 
     this._renderer.setElementStyle(
       this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.windowPanel.backgroundAlpha + ')');
@@ -54,7 +54,7 @@ export class WindowComponent implements AfterViewInit {
       mutObs.observe(this.panelDiv.nativeElement, { attributes: true });
     }
 
-    this.dragBar.nativeElement.addEventListener('mousedown', (e) => {
+    this.titleDiv.nativeElement.addEventListener('mousedown', (e) => {
       const mouseX = e.clientX;
       const mouseY = e.clientY;
       this.windowPanel.left = parseInt(this.panelDiv.nativeElement.getBoundingClientRect().left, 10);
@@ -63,20 +63,13 @@ export class WindowComponent implements AfterViewInit {
       this.mouseWindowTop = mouseY - this.windowPanel.top;
       WindowComponent.lastClickDiv = this;
       document.addEventListener('mousemove', this.startDragging);
-
       this.bringWindowForward();
-
     })
 
+    this.bringWindowForward();
     document.addEventListener('mouseup', () => { this.stopDragging(); });
     window.addEventListener('resize', () => { this.windowResize() });
     this.panelDiv.nativeElement.addEventListener('mousedown', () => { this.bringWindowForward(); });
-
-    this.dragBar.nativeElement.addEventListener('dblclick', (event) => {
-      if (event.button === 0) {
-        this.maximize();
-      }
-    })
 
     this.childComponent.resize(this.windowPanel.width - 10, this.windowPanel.height - 40);
 
@@ -155,6 +148,7 @@ export class WindowComponent implements AfterViewInit {
 
       this.windowPanel.width = this.panelDiv.nativeElement.getBoundingClientRect().width - 10;
       this.windowPanel.height = this.panelDiv.nativeElement.getBoundingClientRect().height - 10;
+      this.titleDiv.nativeElement.style.width = this.windowPanel.width - 190 + 'px';
       this.childComponent.resize(this.windowPanel.width - 10, this.windowPanel.height - 40);
     }
   }
@@ -174,15 +168,9 @@ export class WindowComponent implements AfterViewInit {
     window.getSelection().removeAllRanges();
   }
 
-  incAlpha() {
-    this.windowPanel.backgroundAlpha += 0.05;
+  transparentSlider(event: any) {
+    this.windowPanel.backgroundAlpha = event.value;
     this.windowPanel.backgroundAlpha = Math.min(this.windowPanel.backgroundAlpha, 1.0);
-    this._renderer.setElementStyle(
-      this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.windowPanel.backgroundAlpha + ')');
-  }
-
-  decAlpha() {
-    this.windowPanel.backgroundAlpha -= 0.05;
     this.windowPanel.backgroundAlpha = Math.max(this.windowPanel.backgroundAlpha, 0.0);
     this._renderer.setElementStyle(
       this.panelDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.windowPanel.backgroundAlpha + ')');
