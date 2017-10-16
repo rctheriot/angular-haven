@@ -33,8 +33,8 @@
         <mat-slider color='primary' [min]="sliderDayMin" [max]="sliderDayMax" step="1" [value]="selDay" (input)="sliderDayChange($event)"></mat-slider>
 
         <mat-form-field>
-          <mat-select required placeholder="Value" [(ngModel)]="selOption" [ngModelOptions]="{standalone: true}" class="input-field">
-            <mat-option *ngFor="let option of optionsSelection" [value]="option">{{ option.value }}</mat-option>
+          <mat-select required placeholder="Value Type" [(ngModel)]="selOption" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let option of optionsSelection" [value]="option">{{ option.valueType }}</mat-option>
           </mat-select>
         </mat-form-field>
 

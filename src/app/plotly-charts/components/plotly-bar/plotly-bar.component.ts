@@ -1,125 +1,82 @@
-import { Component, OnInit, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs/Rx'
-import 'rxjs/add/operator/take';
-import * as firebase from 'firebase';
 
 import { PlotlyInfo } from '../../shared/plotlyInfo';
-import { PlotlyQuery } from '../../shared/plotlyQuery';
+import { PlotlyRange } from '../../shared/plotlyRange';
+import { PlotlyChartsService } from '../../service/plotly-charts.service';
+
 @Component({
   selector: 'app-plotly-bar',
   templateUrl: './plotly-bar.component.html',
   styleUrls: ['./plotly-bar.component.css']
 })
-export class PlotlyBarComponent implements OnInit {
+export class PlotlyBarComponent implements OnInit, OnDestroy {
 
-  @Input() query: PlotlyQuery;
+  @Input() chartInfo: PlotlyInfo;
   @ViewChild('chart') chartDiv: ElementRef;
   private chart: ElementRef
-  chartInfo: PlotlyInfo;
   loaded = false;
+  rangeId: number;
 
-
-  constructor(private changeDetector: ChangeDetectorRef) { }
+  constructor(private changeDetector: ChangeDetectorRef, private chartService: PlotlyChartsService) { }
 
   ngOnInit() {
-    this.createChart(this.query);
+    this.chartInfo.rangeObs.subscribe(range => this.updateRange(range));
+    this.createChart();
   }
 
-  createChart(query: PlotlyQuery) {
+  ngOnDestroy() {
+    this.chartService.removeRange(this.rangeId, this.chartInfo.valueType);
+    this.chartService.removeRange(this.rangeId, this.chartInfo.valueType);
+    this.autoResize();
+  }
 
-    const stationArray = [];
-    const capacityArray = [];
-    const profileArray = [];
-    const demandArray = [];
-    const fossilArray = []
-    const data = [];
+  createChart() {
+    const layout = {
+      margin: {
+        l: 50,
+        r: 30,
+        b: 40,
+        t: 20,
+        pad: 0
+      },
+      xaxis: {
+        title: this.chartInfo.xaxisLabel,
+      },
+      yaxis: {
+        title: this.chartInfo.yaxisLabel,
+      },
+      font: {
+        family: 'Roboto, sans-serif',
+      },
+      title: false,
+      barmode: 'stack',
+      showLegend: this.chartInfo.showLegend,
+      hovermode: 'closest',
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)'
+    }
 
-    firebase.database().ref().child(`/key/`).once('value').then((stations) => {
-      stations.forEach(station => {
-        const sta = station.val();
-        sta['id'] = station.key;
-        stationArray.push(sta);
-      })
-    }).then(() => {
-      firebase.database().ref().child(`/scenarios/${query.scenario}/capacity/${query.year}`).once('value').then((capacities) => {
-        capacities.forEach(capacity => {
-          capacityArray.push({ 'value': capacity.val(), 'id': capacity.key });
-        })
-      }).then(() => {
-        firebase.database().ref().child(`/profiles/${query.year}/${query.month}/${query.day}/`).once('value').then((profiles) => {
-          profiles.forEach(profile => {
-            const value = profile.val();
-            value['hour'] = profile.key;
-            profileArray.push(value);
-          })
-        }).then(() => {
-          firebase.database().ref().child(`/scenarios/${query.scenario}/demand/${query.year}/${query.month}/${query.day}/`).once('value').then((demands) => {
-            demands.forEach(demand => {
-              demandArray.push({ 'name': demand.key, 'value': Number(demand.val()) });
-              fossilArray.push({ 'name': demand.key, 'value': Number(demand.val()) });
-            })
-          }).then(() => {
+    this.loaded = true;
+    this.changeDetector.detectChanges();
+    this.chart = this.chartDiv.nativeElement;
+    Plotly.newPlot(this.chart, this.chartInfo.data, layout);
+    this.rangeId = this.chartService.addRange(
+        this.chartDiv.nativeElement.layout.xaxis.range,
+        this.chartDiv.nativeElement.layout.yaxis.range,
+        this.chartInfo.valueType);
+    this.autoResize();
+  }
 
-            const info = new PlotlyInfo();
-            capacityArray.forEach(capacity => {
-              const id = capacity.id;
-              const cap = capacity.value;
-              let resource = null;
-              const hourlySupply = [];
+  autoResize() {
+    this.chartService.updateRanges(this.chartInfo.valueType);
+  }
 
-              const newLine = {
-                x: [],
-                y: [],
-                type: 'bar',
-              }
-
-              stationArray.forEach(station => {
-                if (station.id === id) {
-                  resource = station.resource;
-                }
-              })
-              profileArray.forEach(profile => {
-                const hour = profile['hour'];
-                let supply = cap * Number(profile[resource]);
-                if (isNaN(supply) || supply < 0) { supply = 0; }
-
-
-                newLine.x.push(hour);
-                newLine.y.push(Number(supply));
-                newLine['name'] = resource;
-
-              })
-              if (resource !== 'Fossil') {
-                data.push(newLine);
-              }
-            })
-
-            info.data = data;
-            info.layout = {
-              margin: {
-                l: 30,
-                r: 30,
-                b: 30,
-                t: 30,
-                pad: 0
-              },
-              title: false,
-              hovermode: 'closest',
-              barmode: 'stack',
-              paper_bgcolor: 'rgba(0,0,0,0)',
-              plot_bgcolor: 'rgba(0,0,0,0)'
-            }
-
-            this.chartInfo = info;
-            this.loaded = true;
-            this.changeDetector.detectChanges();
-            this.chart = this.chartDiv.nativeElement;
-            Plotly.newPlot(this.chart, this.chartInfo.data, this.chartInfo.layout);
-
-          });
-        });
-      });
-    });
+  updateRange(range: PlotlyRange) {
+    if (this.loaded) {
+      const update = { 'xaxis.range': range.xrange,  'yaxis.range': range.yrange  };
+      Plotly.relayout(this.chart, update)
+    }
   }
 
   public resize(width: number, height: number) {

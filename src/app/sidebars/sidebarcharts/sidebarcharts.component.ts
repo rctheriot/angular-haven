@@ -65,19 +65,19 @@ export class SidebarchartsComponent implements OnInit {
 
   optionsSelection = [
     {
-      value: 'Capacity',
+      valueType: 'Capacity',
       scenarios: this.scenarios,
       scopes: ['Yearly'],
-      charts: ['Line', '3DSurface', 'Bar'],
+      charts: ['Line', 'Bar', 'Heatmap'],
     },
     {
-      value: 'Demand',
+      valueType: 'Demand',
       scenarios: ['Not Required'],
       scopes: ['Yearly', 'Monthly', 'Daily', 'Hourly'],
       charts: ['Line', '3DSurface', 'Bar'],
     },
     {
-      value: 'Supply',
+      valueType: 'Supply',
       scenarios: this.scenarios,
       scopes: ['Yearly', 'Monthly', 'Daily', 'Hourly'],
       charts: ['Line', '3DSurface', 'Bar'],
@@ -124,9 +124,9 @@ export class SidebarchartsComponent implements OnInit {
 
   createWindow() {
     if (this.selScenario && this.selChart) {
-      const query = new PlotlyQuery(this.selOption.value, this.selChart, this.selScenario, this.selScope, this.queryYear, this.queryMonth, this.queryDay);
+      const query = new PlotlyQuery(this.selOption.valueType, this.selChart, this.selScenario, this.selScope, this.queryYear, this.queryMonth, this.queryDay);
       const windowColor = this.colors[this.scenarios.indexOf(this.selScenario)];
-      const newWin = new WindowPanel( `${this.selScenario.toUpperCase()} - ${this.selOption.value}`, 'plotly', query, windowColor);
+      const newWin = new WindowPanel( `${this.selScenario.toUpperCase()} - ${this.selScope} - ${this.selOption.valueType}`, 'plotly', query, windowColor);
       this.windowService.addWindow(newWin);
     }
   }

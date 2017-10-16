@@ -10,24 +10,16 @@ export class AuthService {
   constructor(private router: Router, private afAuth: AngularFireAuth) { }
 
   signinUser(email: string, password: string) {
-    this.afAuth.auth.signInWithEmailAndPassword(email, password)
-      .then(
-      response => {
-        firebase.auth().currentUser.getIdToken()
-          .then(
-          (token: string) => {
-            this.token = token;
-            if (this.token) {
-              this.router.navigate(['/main/home']);
-            }
+    this.afAuth.auth.signInWithEmailAndPassword(email, password).then(response => {
+        firebase.auth().currentUser.getIdToken().then((token: string) => {
+          this.token = token;
+          if (this.token) {
+            this.router.navigate(['/main/home']);
           }
-          )
-
+        })
       }
-      )
-      .catch(
-      error => alert(error)
-      );
+    ).catch(
+      error => alert(error));
   }
 
   signOut(): void {
@@ -37,10 +29,7 @@ export class AuthService {
   }
 
   getToken() {
-    this.afAuth.auth.currentUser.getIdToken()
-      .then(
-      (token: string) => this.token = token
-      );
+    this.afAuth.auth.currentUser.getIdToken().then((token: string) => this.token = token);
     return this.token;
   }
 
@@ -53,7 +42,7 @@ export class AuthService {
   }
 
   createAccount(email, password) {
-    this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(function (user) {
+    this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(user =>  {
       if (user !== null) {
         alert('Account Created Successfully');
       }

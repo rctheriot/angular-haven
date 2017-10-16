@@ -3,7 +3,7 @@
 </div>
 
 <div *ngIf="loaded">
-  <app-plotly-line #child *ngIf="query.type =='line'" [chartInfo]="plotlyInfo"></app-plotly-line>
-  <app-plotly-3dsurface #child *ngIf="query.type =='3dsurface'" [query]="plotlyData"></app-plotly-3dsurface>
-  <app-plotly-bar #child *ngIf="query.type =='bar'" [query]="plotlyData"></app-plotly-bar>
+  <app-plotly-line #child *ngIf="query.chartType =='line'" [chartInfo]="plotlyInfo"></app-plotly-line>
+  <app-plotly-bar #child *ngIf="query.chartType =='bar'" [chartInfo]="plotlyInfo"></app-plotly-bar>
+  <app-plotly-heatmap #child *ngIf="query.chartType =='heatmap'" [chartInfo]="plotlyInfo"></app-plotly-heatmap>
 </div>

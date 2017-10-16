@@ -12,17 +12,25 @@ export class LoginComponent {
 
   email: string;
   password: string;
+  messageText: string;
 
-  constructor(private authService: AuthService) {
-
-  }
+  constructor(private authService: AuthService) { this.login(); }
 
   login() {
     this.authService.signinUser(this.email, this.password);
   }
 
   createAccount() {
-    this.authService.createAccount(this.email, this.password);
+    const message = this.authService.createAccount(this.email, this.password);
+    if (message) {
+      //this.showMessageDialog('Success');
+    } else {
+      //this.showMessageDialog(message);
+    }
   }
 
+  showMessageDialog(msg: any) {
+    this.messageText = msg;
+    console.log(msg);
+  }
 }
