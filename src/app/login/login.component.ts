@@ -14,18 +14,19 @@ export class LoginComponent {
   password: string;
   messageText: string;
 
-  constructor(private authService: AuthService) { this.login(); }
+  constructor(private authService: AuthService) { this.login() }
 
   login() {
-    this.authService.signinUser(this.email, this.password);
+    this.authService.signinUser('havendev@gmail.com', 'lavalava');
+    // this.authService.signinUser(this.email, this.password);
   }
 
   createAccount() {
     const message = this.authService.createAccount(this.email, this.password);
     if (message) {
-      //this.showMessageDialog('Success');
+      // this.showMessageDialog('Success');
     } else {
-      //this.showMessageDialog(message);
+      // this.showMessageDialog(message);
     }
   }
 

@@ -21,7 +21,7 @@ export class PlotlyLineComponent implements OnInit, OnDestroy {
   constructor(private changeDetector: ChangeDetectorRef, private chartService: PlotlyChartsService) { }
 
   ngOnInit() {
-    this.chartInfo.rangeObs.subscribe(range => this.updateRange(range));
+    if (this.chartInfo.rangeObs) { this.chartInfo.rangeObs.subscribe(range => this.updateRange(range)); }
     this.createChart();
   }
 
@@ -60,16 +60,20 @@ export class PlotlyLineComponent implements OnInit, OnDestroy {
     this.changeDetector.detectChanges();
     this.chart = this.chartDiv.nativeElement;
     Plotly.newPlot(this.chart, this.chartInfo.data, layout);
-    this.rangeId = this.chartService.addRange(
-        this.chartDiv.nativeElement.layout.xaxis.range,
-        this.chartDiv.nativeElement.layout.yaxis.range,
-        this.chartInfo.valueType);
+    this.addRangeToService(this.chartDiv.nativeElement.layout.xaxis.range, this.chartDiv.nativeElement.layout.yaxis.range);
     this.autoResize();
 
   }
+  addRangeToService(xrangeArray: [number, number], yrangeArray: [number, number]) {
+    if (this.chartInfo.rangeObs) {
+      this.chartService.addRange(xrangeArray, yrangeArray, this.chartInfo.valueType)
+    }
+  }
 
   autoResize() {
-    this.chartService.updateRanges(this.chartInfo.valueType);
+    if (this.chartInfo.rangeObs) {
+      this.chartService.updateRanges(this.chartInfo.valueType);
+    }
   }
 
   updateRange(range: PlotlyRange) {

@@ -30,6 +30,7 @@ export class PlotlyChartComponent implements OnInit {
     'Wind': '#3498DB',
     'Offshore Wind': '#8E44AD',
     'Hydro': '#1ABC9C',
+    'demand': '#D35400',
   }
 
   constructor(private plotlySerivce: PlotlyChartsService) {
@@ -57,12 +58,50 @@ export class PlotlyChartComponent implements OnInit {
     })
   }
 
-  loadDemand() {
+  loadSupply() { }
 
+  loadDemand() {
+    const preData = {};
+    const data = {};
+    let dateQuery = '/';
+    if (this.query.scope === 'monthly') { dateQuery += `${this.query.year}/`; }
+    if (this.query.scope === 'daily') { dateQuery += `${this.query.year}/${this.query.month}/`; }
+    if (this.query.scope === 'hourly') { dateQuery += `${this.query.year}/${this.query.month}/${this.query.day}/`; }
+    firebase.database().ref().child(`/scenarios/`).child(this.query.scenario).child('demand').child(dateQuery).once('value').then((values) => {
+      values.forEach(value => {
+        let time = value.key;
+        if (this.query.scope === 'monthly') { time = `${this.query.year}-${time}` }
+        if (this.query.scope === 'daily') { time = `${this.query.year}-${this.query.month}-${time}` }
+        if (this.query.scope === 'hourly') { time = `${this.query.year}-${this.query.month}-${this.query.day} ${time}` }
+        if (!data['demand']) { data['demand'] = {}; }
+        data['demand'][time] = this.arrSum(value.val());
+      })
+    }).then(() => {
+      switch (this.query.chartType) {
+        case 'line':
+          this.loadDemandChart(this.loadLineChart(data), `${this.query.scope} - Demand`, 'Time', 'Demand (MW)');
+          break;
+        case 'bar':
+          this.loadDemandChart(this.loadBarChart(data), `${this.query.scope} - Demand`, 'Time', 'Demand (MW)');
+          break;
+        case 'heatmap':
+          this.loadDemandChart(this.loadHeatMap(data), `${this.query.scope} - Demand`, 'Time', 'Demand (MW)');
+          break;
+        default:
+          break;
+      }
+    });
   }
 
-  loadSupply() {
-
+  loadDemandChart(plotlyData: any[], title: string, xaxis: string, yaxis: string) {
+    this.plotlyInfo.data = plotlyData;
+    this.plotlyInfo.title = title;
+    this.plotlyInfo.valueType = this.query.valueType;
+    this.plotlyInfo.xaxisLabel = xaxis;
+    this.plotlyInfo.yaxisLabel = yaxis;
+    this.plotlyInfo.showLegend = true;
+    this.plotlyInfo.rangeObs = null;
+    this.loaded = true;
   }
 
   loadCapacity() {
@@ -80,13 +119,13 @@ export class PlotlyChartComponent implements OnInit {
     }).then(() => {
       switch (this.query.chartType) {
         case 'line':
-          this.loadCapacityChart(this.loadLineChart(data), `${this.query.scope} - Capacity`, 'Time (Year)', 'Capacity (MW)');
+          this.loadCapacityChart(this.loadLineChart(data), `${this.query.scope} - Capacity`, 'Time', 'Capacity (MW)');
           break;
         case 'bar':
-          this.loadCapacityChart(this.loadBarChart(data), `${this.query.scope} - Capacity`, 'Time (Year)', 'Capacity (MW)');
+          this.loadCapacityChart(this.loadBarChart(data), `${this.query.scope} - Capacity`, 'Time', 'Capacity (MW)');
           break;
         case 'heatmap':
-          this.loadCapacityChart(this.loadHeatMap(data), `${this.query.scope} - Capacity`, 'Time (Year)', 'Capacity (MW)');
+          this.loadCapacityChart(this.loadHeatMap(data), `${this.query.scope} - Capacity`, 'Time', 'Capacity (MW)');
           break;
         default:
           break;
@@ -173,7 +212,6 @@ export class PlotlyChartComponent implements OnInit {
         if (xvalues.indexOf(innerKey) === -1) { xvalues.push(innerKey); }
       }
     }
-    xvalues.sort();
     for (const key in data) {
       if (!data.hasOwnProperty(key)) { continue; }
       const zElement = [];
@@ -198,6 +236,16 @@ export class PlotlyChartComponent implements OnInit {
     for (let i = 0; i < this.stations.length; i++) {
       if (this.stations[i].id === id) { return this.stations[i].type; }
     }
+  }
+
+  arrSum(arr: any) {
+    let sum = 0;
+    if (arr instanceof Array) {
+      arr.forEach( el => { sum += this.arrSum(el); })
+    } else {
+      sum += Number(arr);
+    }
+    return sum;
   }
 
   public resize(width: number, height: number) {
