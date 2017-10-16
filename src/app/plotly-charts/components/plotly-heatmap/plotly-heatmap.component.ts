@@ -23,7 +23,6 @@ export class PlotlyHeatmapComponent implements OnInit {
     this.createChart();
   }
 
-
   createChart() {
     const layout = {
       margin: {

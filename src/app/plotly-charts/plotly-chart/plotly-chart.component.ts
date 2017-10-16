@@ -23,14 +23,14 @@ export class PlotlyChartComponent implements OnInit {
   plotlyData = [];
 
   typeColors = {
-    'Fossil': '#2C3E50',
-    'Biofuel': '#F39C12',
-    'Biomass': '#2ECC71',
-    'Solar': '#E74C3C',
-    'Wind': '#3498DB',
-    'Offshore Wind': '#8E44AD',
-    'Hydro': '#1ABC9C',
-    'demand': '#D35400',
+    'Fossil': '#D32F2F',
+    'Biofuel': '#A04000',
+    'Biomass': '#1E8449',
+    'Solar': '#F5B041',
+    'Wind': '#8E44AD',
+    'Offshore Wind': '#2E86C1',
+    'Hydro': '#48C9B0',
+    'Demand': '#566573',
   }
 
   constructor(private plotlySerivce: PlotlyChartsService) {
@@ -40,8 +40,9 @@ export class PlotlyChartComponent implements OnInit {
   ngOnInit() {
     firebase.database().ref().child(`/key/`).once('value').then((stations) => {
       stations.forEach(station => {
-        this.stations.push({ type: station.val().type, id: station.key });
+        this.stations.push({ type: station.val().type, id: Number(station.key), resource: station.val().resource });
       })
+    }).then(() => {
       switch (this.query.valueType) {
         case 'capacity':
           this.loadCapacity();
@@ -58,7 +59,86 @@ export class PlotlyChartComponent implements OnInit {
     })
   }
 
-  loadSupply() { }
+  loadSupply() {
+    const dateQuery = `/${this.query.year}/${this.query.month}/${this.query.day}/`;
+    // if (this.query.scope === 'monthly') { dateQuery += `${this.query.year}/`; }
+    // if (this.query.scope === 'daily') { dateQuery += `${this.query.year}/${this.query.month}/`; }
+    // if (this.query.scope === 'hourly') { dateQuery += `${this.query.year}/${this.query.month}/${this.query.day}/`; }
+    const capacity = {};
+    const demand = {};
+    const profile = {};
+    const data = {};
+    firebase.database().ref().child(`/scenarios/`).child(this.query.scenario).child('capacity').child(`/${this.query.year}/`).once('value').then((cap) => {
+      cap.forEach(c => {
+        if (!data['capacity']) { data['capacity'] = {}; }
+        data['capacity'][c.key] = c.val();
+      })
+    }).then(() => {
+      firebase.database().ref().child(`/scenarios/`).child(this.query.scenario).child('demand').child(dateQuery).once('value').then((dem) => {
+        dem.forEach(d => {
+          if (!data['Demand']) { data['Demand'] = {}; }
+          data['Demand'][d.key] = Number(d.val());
+          if (!data['Fossil']) { data['Fossil'] = {}; }
+          data['Fossil'][d.key] = Number(d.val());
+        })
+      }).then(() => {
+        firebase.database().ref().child(`/profiles/`).child(dateQuery).once('value').then((prof) => {
+          profile[prof.key] = prof.val();
+        }).then(() => {
+          for (const key in profile) {
+            if (profile[key].hasOwnProperty(key)) { continue; }
+            for (let i = 0; i < profile[key].length; i++) {
+              const time = i;
+              for (const id in data['capacity']) {
+                if (data['capacity'][id].hasOwnProperty(id)) { continue; }
+                const resource = this.getStationResource(Number(id));
+                const type = this.getStationType(Number(id));
+                if (resource === 'Fossil') { continue; }
+                if (!data['capacity'][id]) { continue; }
+                const percent = profile[key][time][resource];
+                const cap = data['capacity'][id];
+                let supply = percent * cap;
+                if (Number.isNaN(supply)) { supply = 0; }
+                if (!data[type]) { data[type] = {}; }
+                if (!data[type][time]) { data[type][time] = 0; }
+                data[type][time] += supply;
+                data['Fossil'][time] -= supply;
+                data['Fossil'][time] = Math.max(data['Fossil'][time], 0);
+
+              }
+            }
+          }
+          delete data['capacity'];
+        }).then(() => {
+          switch (this.query.chartType) {
+            case 'line':
+              this.loadSupplyChart(this.loadLineChart(data), `${this.query.scope} - Supply`, 'Time', 'Energy (MWh)');
+              break;
+            case 'bar':
+              delete data['Demand'];
+              this.loadSupplyChart(this.loadBarChart(data), `${this.query.scope} - Supply`, 'Time', 'Energy (MWh)');
+              break;
+            case 'heatmap':
+              this.loadSupplyChart(this.loadHeatMap(data), `${this.query.scope} - Supply`, 'Time', 'Energy (MWh)');
+              break;
+            default:
+              break;
+          }
+        });
+      })
+    });
+  }
+
+  loadSupplyChart(plotlyData: any[], title: string, xaxis: string, yaxis: string) {
+    this.plotlyInfo.data = plotlyData;
+    this.plotlyInfo.title = title;
+    this.plotlyInfo.valueType = this.query.valueType;
+    this.plotlyInfo.xaxisLabel = xaxis;
+    this.plotlyInfo.yaxisLabel = yaxis;
+    this.plotlyInfo.showLegend = true;
+    this.plotlyInfo.rangeObs = this.plotlySerivce.supplyRangeObs;
+    this.loaded = true;
+  }
 
   loadDemand() {
     const preData = {};
@@ -73,8 +153,8 @@ export class PlotlyChartComponent implements OnInit {
         if (this.query.scope === 'monthly') { time = `${this.query.year}-${time}` }
         if (this.query.scope === 'daily') { time = `${this.query.year}-${this.query.month}-${time}` }
         if (this.query.scope === 'hourly') { time = `${this.query.year}-${this.query.month}-${this.query.day} ${time}` }
-        if (!data['demand']) { data['demand'] = {}; }
-        data['demand'][time] = this.arrSum(value.val());
+        if (!data['Demand']) { data['Demand'] = {}; }
+        data['Demand'][time] = this.arrSum(value.val());
       })
     }).then(() => {
       switch (this.query.chartType) {
@@ -110,7 +190,7 @@ export class PlotlyChartComponent implements OnInit {
       years.forEach(year => {
         const yr = year.key;
         year.forEach(id => {
-          const type = this.getStationType(id.key);
+          const type = this.getStationType(Number(id.key));
           if (!data[type]) { data[type] = {}; }
           if (!data[type][yr]) { data[type][yr] = 0; }
           data[type][yr] += Number(id.val());
@@ -228,7 +308,6 @@ export class PlotlyChartComponent implements OnInit {
       colorscale: colorscaleValue,
       type: 'heatmap',
     }]
-    console.log(heatData);
     return heatData;
   }
 
@@ -238,10 +317,16 @@ export class PlotlyChartComponent implements OnInit {
     }
   }
 
+  getStationResource(id: number) {
+    for (let i = 0; i < this.stations.length; i++) {
+      if (this.stations[i].id === id) { return this.stations[i].resource; }
+    }
+  }
+
   arrSum(arr: any) {
     let sum = 0;
     if (arr instanceof Array) {
-      arr.forEach( el => { sum += this.arrSum(el); })
+      arr.forEach(el => { sum += this.arrSum(el); })
     } else {
       sum += Number(arr);
     }

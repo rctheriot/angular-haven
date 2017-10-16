@@ -79,8 +79,8 @@ export class SidebarchartsComponent implements OnInit {
     {
       valueType: 'Supply',
       scenarios: this.scenarios,
-      scopes: ['Yearly', 'Monthly', 'Daily', 'Hourly'],
-      charts: ['Line', '3DSurface', 'Bar'],
+      scopes: ['Hourly'],
+      charts: ['Line', 'Bar', 'Heatmap'],
     }
   ]
 

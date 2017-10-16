@@ -14,11 +14,11 @@ export class LoginComponent {
   password: string;
   messageText: string;
 
-  constructor(private authService: AuthService) { this.login() }
+  constructor(private authService: AuthService) { }
 
   login() {
-    this.authService.signinUser('havendev@gmail.com', 'lavalava');
-    // this.authService.signinUser(this.email, this.password);
+    this.authService.signinUser(this.email, this.password);
+
   }
 
   createAccount() {
