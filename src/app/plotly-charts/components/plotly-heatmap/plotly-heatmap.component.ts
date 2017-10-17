@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, SimpleChange, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs/Rx'
 
 import { PlotlyInfo } from '../../shared/plotlyInfo';
@@ -8,9 +8,10 @@ import { PlotlyInfo } from '../../shared/plotlyInfo';
   templateUrl: './plotly-heatmap.component.html',
   styleUrls: ['./plotly-heatmap.component.css']
 })
-export class PlotlyHeatmapComponent implements OnInit {
+export class PlotlyHeatmapComponent implements OnInit, OnChanges {
 
-  @Input() chartInfo: PlotlyInfo;
+  @Input() plotlyInfo: PlotlyInfo;
+  @Input() size: [number, number];
   @ViewChild('chart') chartDiv: ElementRef;
   private chart: ElementRef
   loaded = false;
@@ -25,6 +26,8 @@ export class PlotlyHeatmapComponent implements OnInit {
 
   createChart() {
     const layout = {
+      width: this.size[0],
+      height: this.size[1],
       margin: {
         l: 70,
         r: 30,
@@ -39,29 +42,30 @@ export class PlotlyHeatmapComponent implements OnInit {
         tickangle: -45,
       },
       title: false,
-      showLegend: this.chartInfo.showLegend,
+      showLegend: this.plotlyInfo.showLegend,
       hovermode: 'closest',
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)'
     }
 
     this.loaded = true;
+    this.plotlyInfo.layout = layout;
     this.changeDetector.detectChanges();
     this.chart = this.chartDiv.nativeElement;
-    Plotly.newPlot(this.chart, this.chartInfo.data, layout);
+    Plotly.newPlot(this.chart, this.plotlyInfo.data, this.plotlyInfo.layout);
 
   }
 
-  public resize(width: number, height: number) {
-    const update = {
-      width: width,
-      height: height,
-    };
-
+  ngOnChanges(changes: SimpleChanges) {
+    const size: SimpleChange = changes.size;
+    this.size = size.currentValue;
     if (this.loaded) {
+      const update = {
+        width: this.size[0],
+        height: this.size[1],
+      };
       Plotly.relayout(this.chart, update);
     }
-
   }
 
 }

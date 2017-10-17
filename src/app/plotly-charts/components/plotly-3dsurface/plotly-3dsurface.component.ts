@@ -1,68 +1,91 @@
-import { Component, OnInit, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs/Rx'
-import 'rxjs/add/operator/take';
-import * as firebase from 'firebase';
 
 import { PlotlyInfo } from '../../shared/plotlyInfo';
-import { PlotlyQuery } from '../../shared/plotlyQuery';
+import { PlotlyRange } from '../../shared/plotlyRange';
+import { PlotlyChartsService } from '../../service/plotly-charts.service';
 
 @Component({
   selector: 'app-plotly-3dsurface',
   templateUrl: './plotly-3dsurface.component.html',
   styleUrls: ['./plotly-3dsurface.component.css']
 })
-export class Plotly3dsurfaceComponent implements OnInit {
+export class Plotly3dsurfaceComponent implements OnInit, OnDestroy {
 
-  @Input() query: PlotlyQuery;
+  @Input() plotlyInfo: PlotlyInfo;
   @ViewChild('chart') chartDiv: ElementRef;
   private chart: ElementRef
-  chartInfo: PlotlyInfo;
   loaded = false;
+  rangeId: number;
 
-  constructor(private changeDetector: ChangeDetectorRef) { }
+  constructor(private changeDetector: ChangeDetectorRef, private chartService: PlotlyChartsService) { }
 
   ngOnInit() {
-    this.createChart(this.query);
-
+    if (this.plotlyInfo.rangeObs) { this.plotlyInfo.rangeObs.subscribe(range => this.updateRange(range)); }
+    this.createChart();
   }
 
-  createChart(query: PlotlyQuery) {
-    const demandArray = [];
-    firebase.database().ref().child(`/scenarios/${query.scenario}/demand/${query.year}/`).once('value').then((demands) => {
-      demands.forEach(month => {
-        const m = month.key - 1;
-        month.forEach(day => {
-          const d = day.key;
-          const theDailyDemand = [];
-          day.forEach(hour => {
-            theDailyDemand.push(hour.val());
-          })
-          demandArray.push(theDailyDemand);
-        })
-      })
-      const info = new PlotlyInfo();
-      info.data =  [{
-        z: demandArray,
-        type: 'surface'
-     }];
-      info.layout = {
-        margin: {
-          l: 30,
-          r: 30,
-          b: 30,
-          t: 30,
-          pad: 0
-        },
-        title: false,
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(0,0,0,0)'
-      }
-      this.chartInfo = info;
-      this.loaded = true;
-      this.changeDetector.detectChanges();
-      this.chart = this.chartDiv.nativeElement;
-      Plotly.newPlot(this.chart, this.chartInfo.data, this.chartInfo.layout);
-    })
+  ngOnDestroy() {
+    this.chartService.removeRange(this.rangeId, this.plotlyInfo.valueType);
+    this.chartService.removeRange(this.rangeId, this.plotlyInfo.valueType);
+    this.autoResize();
+  }
+
+  createChart() {
+    const layout = {
+      margin: {
+        l: 50,
+        r: 30,
+        b: 40,
+        t: 20,
+        pad: 0
+      },
+      xaxis: {
+        title: this.plotlyInfo.xaxisLabel,
+      },
+      yaxis: {
+        title: this.plotlyInfo.yaxisLabel,
+      },
+      font: {
+        family: 'Roboto, sans-serif',
+      },
+      title: false,
+      barmode: 'stack',
+      showLegend: this.plotlyInfo.showLegend,
+      hovermode: 'closest',
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)'
+    }
+
+    this.loaded = true;
+    this.changeDetector.detectChanges();
+    this.chart = this.chartDiv.nativeElement;
+    Plotly.newPlot(this.chart, this.plotlyInfo.data, layout);
+    this.loaded = true;
+    this.changeDetector.detectChanges();
+    this.chart = this.chartDiv.nativeElement;
+    Plotly.newPlot(this.chart, this.plotlyInfo.data, layout);
+    this.addRangeToService(this.chartDiv.nativeElement.layout.xaxis.range, this.chartDiv.nativeElement.layout.yaxis.range);
+    this.autoResize();
+
+  }
+  addRangeToService(xrangeArray: [number, number], yrangeArray: [number, number]) {
+    if (this.plotlyInfo.rangeObs) {
+      this.chartService.addRange(xrangeArray, yrangeArray, this.plotlyInfo.valueType)
+    }
+  }
+
+  autoResize() {
+    if (this.plotlyInfo.rangeObs) {
+      this.chartService.updateRanges(this.plotlyInfo.valueType);
+    }
+  }
+
+  updateRange(range: PlotlyRange) {
+    if (this.loaded) {
+      const update = { 'xaxis.range': range.xrange, 'yaxis.range': range.yrange };
+      Plotly.relayout(this.chart, update)
+    }
   }
 
   public resize(width: number, height: number) {

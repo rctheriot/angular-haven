@@ -15,6 +15,7 @@ import { PlotlyChartsService } from '../service/plotly-charts.service';
 export class PlotlyChartComponent implements OnInit {
 
   @Input() query: PlotlyQuery;
+  size : [number, number];
   plotlyInfo = new PlotlyInfo();
   @ViewChild('child') childDiv;
   loaded: boolean;
@@ -334,9 +335,7 @@ export class PlotlyChartComponent implements OnInit {
   }
 
   public resize(width: number, height: number) {
-    if (this.loaded) {
-      this.childDiv.resize(width, height);
-    }
+    this.size = [width, height];
   }
 
 }
