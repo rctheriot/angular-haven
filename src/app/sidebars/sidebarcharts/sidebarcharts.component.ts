@@ -57,8 +57,8 @@ export class SidebarchartsComponent implements OnInit {
   sliderDayMax = 365;
 
   selOption: any;
+  selScope: any;
   selScenario: string;
-  selScope: string;
   selChart: string;
 
   scenarios = [];
@@ -67,20 +67,41 @@ export class SidebarchartsComponent implements OnInit {
     {
       valueType: 'Capacity',
       scenarios: this.scenarios,
-      scopes: ['Yearly'],
-      charts: ['Line', 'Bar', 'Heatmap'],
+      scopes: [ {
+        name: 'Yearly',
+        charts: ['Line', 'Bar', 'Heatmap']
+      },
+    ],
     },
     {
       valueType: 'Demand',
       scenarios: this.scenarios,
-      scopes: ['Yearly', 'Monthly', 'Daily', 'Hourly'],
-      charts: ['Line', 'Bar', 'Heatmap'],
-    },
+      scopes: [ {
+        name: 'Yearly',
+        charts: ['Line', 'Bar', 'Heatmap']
+      },
+      {
+        name: 'Monthly',
+        charts: ['Line', 'Bar', 'Heatmap']
+      },
+      {
+        name: 'Daily',
+        charts: ['Line', 'Bar', 'Heatmap', '3DSurface']
+      },
+      {
+        name: 'Hourly',
+        charts: ['Line', 'Bar', 'Heatmap']
+      }
+    ],
+  },
     {
       valueType: 'Supply',
       scenarios: this.scenarios,
-      scopes: ['Hourly'],
-      charts: ['Line', 'Bar', 'Heatmap'],
+      scopes: [ {
+        name: 'Hourly',
+        charts: ['Line', 'Bar', 'Heatmap']
+      },
+    ],
     }
   ]
 
@@ -93,6 +114,7 @@ export class SidebarchartsComponent implements OnInit {
 
   constructor(private windowService: WindowService, private chartService: PlotlyChartsService) {
     this.selOption = this.optionsSelection[0];
+    this.selScope = this.selOption.scopes[0];
   }
 
   ngOnInit() {
@@ -124,18 +146,44 @@ export class SidebarchartsComponent implements OnInit {
 
   createWindow() {
     if (this.selScenario && this.selChart) {
-      const query = new PlotlyQuery(this.selOption.valueType, this.selChart, this.selScenario, this.selScope, this.queryYear, this.queryMonth, this.queryDay);
+      const query = new PlotlyQuery(this.selOption.valueType, this.selChart, this.selScenario, this.selScope.name, this.queryYear, this.queryMonth, this.queryDay);
       const windowColor = this.colors[this.scenarios.indexOf(this.selScenario)];
-      const newWin = new WindowPanel( `${this.selScenario.toUpperCase()} - ${this.selScope} - ${this.selOption.valueType}`, 'plotly', query, windowColor);
+      const title = this.getChartWindowTitle();
+      const newWin = new WindowPanel(title, 'plotly', query, windowColor);
       this.windowService.addWindow(newWin);
     }
+  }
+
+  getChartWindowTitle(): string {
+    switch (this.selScope.name) {
+      case 'Yearly':
+        return `${this.selScenario.toUpperCase()} ${this.selOption.valueType}  2016 - 2045`;
+      case 'Monthly':
+        return `${this.selScenario.toUpperCase()} ${this.selOption.valueType} - ${this.selYear}`;
+      case 'Daily':
+        return `${this.selScenario.toUpperCase()} ${this.selOption.valueType} - ${this.titleMonth()} ${this.selYear}`;
+      case 'Hourly':
+        return `${this.selScenario.toUpperCase()} ${this.selOption.valueType} - ${this.titleMonth()} ${this.titleDay()}, ${this.selYear}`;
+      default:
+        return `${this.selScenario.toUpperCase()} ${this.selOption.valueType}`;
+    }
+  }
+
+  titleDay(): string {
+    const date = this.dateFromDay(this.selYear, this.selDay);
+    return date.getDate().toString();
+  }
+
+  titleMonth(): string {
+    const date = this.dateFromDay(this.selYear, this.selDay);
+    return this.monthNames[date.getMonth()];
   }
 
   titleDate(): string {
     const date = this.dateFromDay(this.selYear, this.selDay);
     const month = this.monthNames[date.getMonth()];
     const day = date.getDate();
-    return `${day} ${month}`;
+    return `${month} ${day}`
   }
 
   dateFromDay(year, day): Date {

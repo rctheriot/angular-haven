@@ -28,10 +28,10 @@ export class PlotlyChartsService {
       return this.capacityId;
     } else if (valueType === 'demand') {
       this.demandRanges.push(new PlotlyRange(++this.demandId, rangex, rangey));
-      return ++this.demandId;
+      return this.demandId;
     } else if (valueType === 'supply') {
       this.supplyRanges.push(new PlotlyRange(++this.supplyId, rangex, rangey));
-      return ++this.supplyId;
+      return this.supplyId;
     }
   }
 

@@ -8,6 +8,7 @@ export class PlotlyInfo {
   showLegend: boolean;
   xaxisLabel: string;
   yaxisLabel: string;
+  zaxisLabel: string;
   rangeObs: Subject<PlotlyRange>;
   layout = {};
 }

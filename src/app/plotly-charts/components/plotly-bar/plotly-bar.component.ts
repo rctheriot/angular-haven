@@ -72,7 +72,7 @@ export class PlotlyBarComponent implements OnInit, OnDestroy, OnChanges {
   }
   addRangeToService(xrangeArray: [number, number], yrangeArray: [number, number]) {
     if (this.plotlyInfo.rangeObs) {
-      this.chartService.addRange(xrangeArray, yrangeArray, this.plotlyInfo.valueType)
+      this.rangeId = this.chartService.addRange(xrangeArray, yrangeArray, this.plotlyInfo.valueType)
     }
   }
 

@@ -6,4 +6,5 @@
   <app-plotly-line #child *ngIf="query.chartType =='line'" [size]="size" [plotlyInfo]="plotlyInfo"></app-plotly-line>
   <app-plotly-bar #child *ngIf="query.chartType =='bar'" [size]="size" [plotlyInfo]="plotlyInfo"></app-plotly-bar>
   <app-plotly-heatmap #child *ngIf="query.chartType =='heatmap'" [size]="size" [plotlyInfo]="plotlyInfo"></app-plotly-heatmap>
+  <app-plotly-3dsurface #child *ngIf="query.chartType =='3dsurface'" [size]="size" [plotlyInfo]="plotlyInfo"></app-plotly-3dsurface>
 </div>

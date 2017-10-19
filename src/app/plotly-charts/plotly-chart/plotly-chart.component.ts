@@ -15,7 +15,7 @@ import { PlotlyChartsService } from '../service/plotly-charts.service';
 export class PlotlyChartComponent implements OnInit {
 
   @Input() query: PlotlyQuery;
-  size : [number, number];
+  size: [number, number];
   plotlyInfo = new PlotlyInfo();
   @ViewChild('child') childDiv;
   loaded: boolean;
@@ -155,9 +155,14 @@ export class PlotlyChartComponent implements OnInit {
         if (this.query.scope === 'daily') { time = `${this.query.year}-${this.query.month}-${time}` }
         if (this.query.scope === 'hourly') { time = `${this.query.year}-${this.query.month}-${this.query.day} ${time}` }
         if (!data['Demand']) { data['Demand'] = {}; }
-        data['Demand'][time] = this.arrSum(value.val());
+        if (this.query.chartType === '3dsurface') {
+          data['Demand'][time] = value.val();
+        } else {
+          data['Demand'][time] = this.arrSum(value.val());
+        }
       })
     }).then(() => {
+      console.log(data);
       switch (this.query.chartType) {
         case 'line':
           this.loadDemandChart(this.loadLineChart(data), `${this.query.scope} - Demand`, 'Time', 'Demand (MW)');
@@ -167,6 +172,10 @@ export class PlotlyChartComponent implements OnInit {
           break;
         case 'heatmap':
           this.loadDemandChart(this.loadHeatMap(data), `${this.query.scope} - Demand`, 'Time', 'Demand (MW)');
+          break;
+        case '3dsurface':
+          this.plotlyInfo.zaxisLabel = 'Demand (MW)';
+          this.loadDemandChart(this.load3DSurface(data), `${this.query.scope} - Demand`, 'Hours', 'Day');
           break;
         default:
           break;
@@ -274,6 +283,28 @@ export class PlotlyChartComponent implements OnInit {
       plotlyData.push(trace);
     }
     return plotlyData;
+  }
+
+  load3DSurface(data: Object) {
+    const zvalues = [];
+    const colorscaleValue = [
+      [0, '#6699CC'],
+      [1, '#EC5f67']
+    ];
+
+    for (const key in data) {
+      if (!data.hasOwnProperty(key)) { continue; }
+      for (const innerkey in data[key]) {
+        if (!data[key].hasOwnProperty(innerkey)) { continue; }
+        zvalues.push(data[key][innerkey]);
+      }
+    }
+    const surfaceData = [{
+      z: zvalues,
+      colorscale: colorscaleValue,
+      type: 'surface',
+    }]
+    return surfaceData;
   }
 
   loadHeatMap(data: Object) {

@@ -46,13 +46,13 @@
 
         <mat-form-field>
           <mat-select required placeholder="Scope" [(ngModel)]="selScope" [ngModelOptions]="{standalone: true}" class="input-field">
-            <mat-option *ngFor="let scope of selOption.scopes" [value]="scope">{{ scope }}</mat-option>
+            <mat-option *ngFor="let scope of selOption.scopes" [value]="scope">{{ scope.name }}</mat-option>
           </mat-select>
         </mat-form-field>
         
         <mat-form-field>
           <mat-select required placeholder="Chart" [(ngModel)]="selChart" [ngModelOptions]="{standalone: true}" class="input-field">
-            <mat-option *ngFor="let chart of selOption.charts" [value]="chart">{{ chart }}</mat-option>
+            <mat-option *ngFor="let chart of selScope.charts" [value]="chart">{{ chart }}</mat-option>
           </mat-select>
         </mat-form-field>
 
