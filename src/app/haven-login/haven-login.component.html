@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="col-lg-1 col-centered">
+
+    <mat-card class="example-card">
+      <img mat-card-image src="./assets/images/haventextlogo.png">
+      <mat-card-content>
+        <form>
+          <mat-form-field class="input-field">
+            <input matInput placeholder="Email" type="email" [(ngModel)]="email" name="email">
+          </mat-form-field>
+        </form>
+        <form>
+          <mat-form-field class="input-field">
+            <input matInput placeholder="Password" type="password" [(ngModel)]="password" name="password">
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+      <button appHavenButton mat-raised-button (click)="login()" color="primary" class="login-button" >Login</button>
+      <hr>
+      <button appHavenButton mat-raised-button (click)="createAccount()" color="accent" class="create-button" >Create</button>
+    </mat-card>
+
+  </div>
+</div>

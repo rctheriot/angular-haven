@@ -1,35 +1,35 @@
 import { ModuleWithProviders } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { LoginComponent } from './login/login.component';
-import { MainComponent } from './main/main.component';
-import { HomeComponent } from './home/home.component';
+import { HavenLoginComponent } from './haven-login/haven-login.component';
+import { HavenMainComponent } from './haven-main/haven-main.component';
+import { HavenHomeComponent } from './haven-home/haven-home.component';
 
 import { AuthGuard } from './auth-guard.service';
 
 const router: Routes = [
   {
     path: 'login',
-    component: LoginComponent
+    component: HavenLoginComponent
   },
   {
     path: 'main',
-    component: MainComponent,
+    component: HavenMainComponent,
     canActivate: [AuthGuard],
     children: [
       {
         path: 'home',
-        component: HomeComponent
+        component: HavenHomeComponent
       },
     ],
   },
   {
     path: '',
-    component: LoginComponent
+    component: HavenLoginComponent
   },
   {
     path: '**',
-    component: LoginComponent
+    component: HavenLoginComponent
   }
 ];
 

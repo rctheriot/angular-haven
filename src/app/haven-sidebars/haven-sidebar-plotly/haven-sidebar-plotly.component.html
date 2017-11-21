@@ -1,0 +1,66 @@
+<div id="content" [@movePanel]='state' class="container sidebar">
+
+  <div (click)="toggleMenu()" class="menuButton">
+    <div class="menuButton-text">Charts</div>
+  </div>
+
+  <div class="row">
+
+    <div class="col-sm">
+      <form>
+
+        <div class="col-sm">
+          <button appHavenButton mat-raised-button color="primary" *ngIf="selModel == 'RPS'" (click)="selChange('RPS')">RPS {{ selRPS }}%</button>
+          <button appHavenButton mat-raised-button color="accent" *ngIf="selModel != 'RPS'" (click)="selChange('RPS')">RPS {{ selRPS }}%</button>
+        </div>
+
+        <div class="col-sm">
+          <button appHavenButton mat-raised-button color="primary" *ngIf="selModel == 'REP'" (click)="selChange('REP')">RE {{ selREP }}%</button>
+          <button appHavenButton mat-raised-button color="accent" *ngIf="selModel != 'REP'" (click)="selChange('REP')">RE {{ selREP }}%</button>
+        </div>
+
+        <div class="col-sm">
+          <button appHavenButton mat-raised-button color="primary" *ngIf="selModel == 'Year'" (click)="selChange('Year')">Year {{ selYear }}</button>
+          <button appHavenButton mat-raised-button color="accent" *ngIf="selModel != 'Year'" (click)="selChange('Year')">Year {{ selYear }}</button>
+        </div>
+
+        <mat-slider *ngIf="selModel == 'RPS'" color='primary' [min]="sliderRPSMin" [max]="sliderRPSMax" step="1" [value]="selRPS" (input)="sliderRPSChange($event)"></mat-slider>
+        <mat-slider *ngIf="selModel == 'REP'" color='primary' [min]="sliderREPMin" [max]="sliderREPMax" step="1" [value]="selREP" (input)="sliderREPChange($event)"></mat-slider>
+        <mat-slider *ngIf="selModel == 'Year'" color='primary' [min]="sliderYearMin" [max]="sliderYearMax" step="1" [value]="selYear" (input)="sliderYearChange($event)"></mat-slider>
+
+        <p class="valueLabel">{{ titleDate() }}</p>
+
+        <mat-slider color='primary' [min]="sliderDayMin" [max]="sliderDayMax" step="1" [value]="selDay" (input)="sliderDayChange($event)"></mat-slider>
+
+        <mat-form-field>
+          <mat-select required placeholder="Value Type" [(ngModel)]="selOption" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let option of optionsSelection" [value]="option">{{ option.valueType }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-select required placeholder="Scenario" [(ngModel)]="selScenario" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let scenario of selOption.scenarios" [value]="scenario">{{ scenario }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-select required placeholder="Scope" [(ngModel)]="selScope" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let scope of selOption.scopes" [value]="scope">{{ scope.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field>
+          <mat-select required placeholder="Chart" [(ngModel)]="selChart" [ngModelOptions]="{standalone: true}" class="input-field">
+            <mat-option *ngFor="let chart of selScope.charts" [value]="chart">{{ chart }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button appHavenButton mat-raised-button color="primary" (click)="createWindow()">Create Chart</button>
+
+      </form>
+    </div>
+
+  </div>
+
+</div>

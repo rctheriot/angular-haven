@@ -5,32 +5,26 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 @Injectable()
 export class AuthService {
+
   token: string;
 
   constructor(private router: Router, private afAuth: AngularFireAuth) { }
 
   signinUser(email: string, password: string) {
     this.afAuth.auth.signInWithEmailAndPassword(email, password).then(response => {
-        firebase.auth().currentUser.getIdToken().then((token: string) => {
-          this.token = token;
-          if (this.token) {
-            this.router.navigate(['/main/home']);
-          }
-        })
-      }
-    ).catch(
-      error => alert(error));
+      firebase.auth().currentUser.getIdToken().then((token: string) => {
+        this.token = token;
+        if (this.token) {
+          this.router.navigate(['/main/home']);
+        }
+      });
+    }, error => alert(error.message)).catch(error => alert(error));
   }
 
   signOut(): void {
     this.afAuth.auth.signOut();
     this.token = null;
     this.router.navigate(['/login'])
-  }
-
-  getToken() {
-    this.afAuth.auth.currentUser.getIdToken().then((token: string) => this.token = token);
-    return this.token;
   }
 
   getId() {
@@ -42,13 +36,10 @@ export class AuthService {
   }
 
   createAccount(email, password) {
-    this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(user =>  {
+    this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(user => {
       if (user !== null) {
-        alert('Account Created Successfully');
+        this.signinUser(email, password);
       }
-    }, function (error) {
-      // Handle Errors here.
-      alert(error.message);
-    });
+    }, error => alert(error.message)).catch(error => alert(error));
   }
 }

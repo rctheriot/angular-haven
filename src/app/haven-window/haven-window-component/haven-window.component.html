@@ -1,0 +1,40 @@
+<div #windowDiv class="panel panel-default" (click)="bringForward()">
+
+  <div class="panel-heading panel-heading-custom">
+
+    <div #titleDiv class="title"  appHavenWindowDrag
+    (mousedownHaven)="dragbarClick($event)" 
+    (mousemoveHaven)="dragbarMove($event)" 
+    (mouseupHaven)="dragbarRelease($event)">
+      <div class="title-text">{{ havenWindow.title }}</div>
+    </div>
+
+    <button mat-fab color="warn" (click)="removeWindow()" class="navbarButton">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <button mat-fab (click)="maximize()" class="navbarButton maximize">
+      <mat-icon>crop_square</mat-icon>
+    </button>
+
+    <mat-slider class="transparentSlider" color='accent' 
+      [min]="0" 
+      [max]="1" 
+      step="0.01" 
+      [value]="havenWindow.backgroundAlpha" 
+      (input)="transparentSlider($event)">
+    </mat-slider>
+
+  </div>
+
+  <div class="resizeBox" appHavenWindowResize 
+    (mousedownHaven)="resizeClick($event)" 
+    (mousemoveHaven)="resizeMove($event)"
+    (mouseupHaven)="resizeRelease($event)">
+  </div>
+
+  <div class="windowBody">
+    <app-haven-apps-factory #appRef [windowId]="havenWindow.id"></app-haven-apps-factory>
+  </div>
+
+</div>

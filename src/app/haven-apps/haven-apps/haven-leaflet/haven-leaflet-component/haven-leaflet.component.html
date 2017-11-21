@@ -1,0 +1,6 @@
+<div #child  #mapDiv
+  style="height: 100%; width: 100%;" 
+  leaflet 
+  [leafletOptions]="options"
+  (leafletMapReady)="setMap($event)">
+</div>
