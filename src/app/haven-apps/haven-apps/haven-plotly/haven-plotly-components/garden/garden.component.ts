@@ -576,10 +576,8 @@ export class GardenComponent implements HavenAppInterface, OnInit {
       const originalBounds = 1728 + 287;
       canvas.width = width;
       canvas.height = height - 10;
-      if (this.query.type = 'capacity') {
-        this.renderCapacity();
-        this.plants.scale((canvas.width + canvas.height) / originalBounds);
-      }
+      this.renderCapacity();
+      this.plants.scale((canvas.width + canvas.height) / originalBounds);
     }
   }
 }
