@@ -13,9 +13,11 @@ import {
   MatSelectModule,
   MatSliderModule,
   MatSlideToggleModule,
-  MatStepperModule
+  MatSortModule,
+  MatStepperModule,
+  MatPaginatorModule,
 } from '@angular/material';
-
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   imports: [
@@ -30,7 +32,10 @@ import {
     MatSelectModule,
     MatSliderModule,
     MatSlideToggleModule,
-    MatStepperModule
+    MatSortModule,
+    MatStepperModule,
+    MatPaginatorModule,
+    MatTableModule
   ],
   exports: [
     MatButtonModule,
@@ -44,7 +49,10 @@ import {
     MatSelectModule,
     MatSliderModule,
     MatSlideToggleModule,
-    MatStepperModule
+    MatSortModule,
+    MatStepperModule,
+    MatPaginatorModule,
+    MatTableModule
   ],
 })
 export class HavenMaterialModule { }

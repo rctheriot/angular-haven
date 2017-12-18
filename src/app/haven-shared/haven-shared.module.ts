@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -9,6 +10,7 @@ import { HavenButtonDirective } from './haven-directives/haven-button.directive'
 @NgModule({
   imports: [
     CommonModule,
+    BrowserAnimationsModule,
     HavenMaterialModule,
     FormsModule,
     ReactiveFormsModule,
@@ -18,6 +20,7 @@ import { HavenButtonDirective } from './haven-directives/haven-button.directive'
   ],
   exports: [
     HavenButtonDirective,
+    BrowserAnimationsModule,
     HavenMaterialModule,
     FormsModule,
     ReactiveFormsModule,

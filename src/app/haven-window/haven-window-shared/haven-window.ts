@@ -22,8 +22,8 @@ export class HavenWindow {
     this.app = havenApp;
     this.position.left = 200;
     this.position.top = 200;
-    this.size.width = 300;
-    this.size.height = 300;
+    this.size.width = 400;
+    this.size.height = 400;
     this.backgroundAlpha = 1.0;
     this.title = title;
     this.color = '#a9b6bc';

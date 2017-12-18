@@ -7,6 +7,7 @@ import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/map';
 
 import { HavenFirestoreQueryService } from '../../../../haven-shared/haven-services/haven-firestore-query.service';
+import { HavenWindowService } from '../../../../haven-window/haven-window-services/haven-window.service';
 
 import { PlotlyData } from '../haven-plotly-shared/plotlyData';
 import { PlotlyQuery } from '../haven-plotly-shared/plotlyQuery';
@@ -26,7 +27,9 @@ export class HavenPlotlyQueryService {
     'Load': '#666666',
   }
 
-  constructor(private fsQueryService: HavenFirestoreQueryService) { }
+  monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+  constructor(private fsQueryService: HavenFirestoreQueryService, private havenWindowService: HavenWindowService) { }
 
   getData(query: PlotlyQuery): Promise<PlotlyData> {
     switch (query.firestoreQuery.type) {
@@ -36,6 +39,8 @@ export class HavenPlotlyQueryService {
         return this.getLoad(query);
       case 'supply':
         return this.getSupply(query);
+      case 'netload':
+        return this.getNetLoad(query);
     }
   }
 
@@ -67,6 +72,43 @@ export class HavenPlotlyQueryService {
       plotlyData.yAxisLabel = 'Suppy MWh';
       return Promise.resolve(plotlyData);
     })
+  }
+
+  private getNetLoad(query: PlotlyQuery): Promise<PlotlyData> {
+    return this.fsQueryService.getNetLoad(query.firestoreQuery).then(supplyData => {
+      const plotlyData = new PlotlyData();
+      plotlyData.data = supplyData;
+      plotlyData.xAxisLabel = 'Time';
+      plotlyData.yAxisLabel = 'Netload MWh';
+      return Promise.resolve(plotlyData);
+    })
+  }
+
+  public UpdateWindowName(winId: number, query: any) {
+    let title = '';
+    console.log(query);
+    switch (query.scope) {
+      case 'yearly':
+        title = `${query.scenario.toUpperCase()} ${query.type}  2016 - 2045`;
+        break;
+      case 'monthly':
+        title = `${query.scenario.toUpperCase()} ${query.type} - ${query.year}`;
+        break;
+      case 'daily':
+        title = `${query.scenario.toUpperCase()} ${query.type} - ${this.titleMonth(query.month)} ${query.year}`;
+        break;
+      case 'hourly':
+        title = `${query.scenario.toUpperCase()} ${query.type} - ${this.titleMonth(query.month)} ${query.day}, ${query.year}`;
+        break;
+      default:
+        title = `${query.scenario.toUpperCase()} ${query.type}`;
+        break;
+    }
+    this.havenWindowService.getWindow(winId).then((window) => window.title = title);
+  }
+
+  private titleMonth(month: number): string {
+    return this.monthNames[month];
   }
 
 }

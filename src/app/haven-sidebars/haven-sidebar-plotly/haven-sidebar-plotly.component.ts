@@ -15,9 +15,8 @@ import { HavenWindowService } from '../../haven-window/haven-window-services/hav
 import { HavenApp } from '../../haven-apps/haven-apps-shared/haven-app';
 
 import { HavenFirestoreQuery } from '../../haven-shared/haven-services/haven-firestore-query';
-import { HavenFirestoreQueryService } from '../../haven-shared/haven-services/haven-firestore-query.service';
+import { HavenDateSelectorService } from '../../haven-shared/haven-services/haven-date-selector.service';
 
-import * as firebase from 'firebase';
 import { PlotlyQuery } from 'app/haven-apps/haven-apps/haven-plotly/haven-plotly-shared/plotlyQuery';
 
 @Component({
@@ -48,13 +47,11 @@ export class HavenSidebarPlotlyComponent implements OnInit {
   selModel = 'RPS';
   selRPS = 100;
   sliderRPSMax = 200;
-  sliderRPSMin = 1;
+  sliderRPSMin = 25;
   selREP = 50;
   sliderREPMax = 100;
-  sliderREPMin = 1;
+  sliderREPMin = 20;
   selYear = 2030;
-  sliderYearMax = 2045;
-  sliderYearMin = 2016;
 
   selDay = 180;
   sliderDayMin = 1;
@@ -73,7 +70,7 @@ export class HavenSidebarPlotlyComponent implements OnInit {
       scenarios: this.scenarios,
       scopes: [{
         name: 'Yearly',
-        charts: ['Line', 'Bar', 'Heatmap']
+        charts: ['Line', 'Bar', 'Heatmap', 'Table', 'Garden']
       },
       ],
     },
@@ -100,65 +97,65 @@ export class HavenSidebarPlotlyComponent implements OnInit {
       ],
     },
     {
+      valueType: 'NetLoad',
+      scenarios: this.scenarios,
+      scopes: [{
+        name: 'Monthly',
+        charts: ['Line']
+      },
+      ],
+    },
+    {
       valueType: 'Supply',
       scenarios: this.scenarios,
       scopes: [
         {
           name: 'Monthly',
-          charts: ['Line', 'Bar', 'Heatmap']
+          charts: ['Line', 'Bar', 'Heatmap', 'Table']
         },
         {
           name: 'Daily',
-          charts: ['Line', 'Bar', 'Heatmap']
+          charts: ['Line', 'Bar', 'Heatmap', 'Table']
         },
         {
           name: 'Hourly',
-          charts: ['Line', 'Bar', 'Heatmap']
+          charts: ['Line', 'Bar', 'Heatmap', 'Table']
         }
       ],
-    }
+    },
+    {
+      valueType: 'Map',
+      scenarios: this.scenarios,
+      scopes: [{
+        name: '',
+        charts: ['']
+      },
+      ],
+    },
   ]
 
   chartTypeDict = {
     'Line': 'scatter',
     'Bar': 'bar',
     'Heatmap': 'heatmap',
-    '3DSurface': '3dsurf'
+    '3DSurface': '3dsurf',
+    'Table': 'table',
+    'Garden': 'garden'
   }
 
-  monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
-  rpsValues = [];
-  repValues = [];
+  monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   colors = ['#6699CC', '#99C794', '#F99157']
 
-  constructor(private havenWindowService: HavenWindowService, private havenFirestore: HavenFirestoreQueryService) {
+  constructor(private havenWindowService: HavenWindowService, private havenDateSelector: HavenDateSelectorService) {
     this.selOption = this.optionsSelection[0];
     this.selScope = this.selOption.scopes[0];
+    this.scenarios.push('e3', 'postapril', 'e3genmod');
+    this.selScenario = this.scenarios[0];
   }
 
   ngOnInit() {
-
-    firebase.database().ref().child(`/scenarios/key/`).once('value').then((scenarios) => {
-      scenarios.forEach(scenario => {
-        this.scenarios.push(scenario.val().name);
-        this.selScenario = this.selOption.scenarios[0];
-      })
-    }).then(() => {
-      firebase.database().ref().child(`/rps/`).once('value').then((years) => {
-        years.forEach(year => {
-          this.rpsValues.push({ year: year.key, values: year.val() });
-        })
-        this.setRPS();
-      });
-      firebase.database().ref().child(`/renewpercent/`).once('value').then((years) => {
-        years.forEach(year => {
-          this.repValues.push({ year: year.key, values: year.val() });
-        })
-        this.setREP();
-      });
-    }).then(() => { this.queryUpdate(); });
+    this.queryUpdate();
   }
 
   toggleMenu() {
@@ -166,8 +163,35 @@ export class HavenSidebarPlotlyComponent implements OnInit {
   }
 
   createWindow() {
+    if (this.selOption.valueType === 'Map') {
+      this.createMapWindow();
+    } else {
+      this.createPlotlyWindow();
+    }
+  }
+
+  createMapWindow() {
+    const newApp = new HavenApp()
+    newApp.appName = 'leaflet';
+    const firestoreQuery = new HavenFirestoreQuery(
+      this.queryYear,
+      this.queryMonth - 1,
+      this.queryDay,
+      'monthly',
+      this.selScenario.toLowerCase(),
+      this.selOption.valueType.toLowerCase(),
+      false,
+    )
+    newApp.appInfo = { query: firestoreQuery };
+    const newWin = new HavenWindow(newApp, 'Map');
+    newWin.color = this.colors[this.scenarios.indexOf(this.selScenario)];
+    const winId = this.havenWindowService.addWindow(newWin);
+    newApp.appInfo['winId'] = winId
+  }
+
+  createPlotlyWindow() {
     if (this.selScenario && this.selChart) {
-      const consolidate = (this.selChart === '3DSurface') ? false : true;
+      const consolidate = (this.selChart === '3DSurface' || this.selOption.valueType.toLowerCase() === 'netload' || this.selChart === 'Garden') ? false : true;
       const firestoreQuery = new HavenFirestoreQuery(
         this.queryYear,
         this.queryMonth - 1,
@@ -179,10 +203,12 @@ export class HavenSidebarPlotlyComponent implements OnInit {
       )
       const newApp = new HavenApp();
       newApp.appName = this.getApp();
-      newApp.appInfo = { query: new PlotlyQuery(firestoreQuery, this.chartTypeDict[this.selChart]) }
+      newApp.appInfo = { query: new PlotlyQuery(firestoreQuery, this.chartTypeDict[this.selChart]) };
       const newWin = new HavenWindow(newApp, this.getChartWindowTitle());
+      if (this.selChart === 'Garden') { newWin.size.width = 1758; newWin.size.height = 342; }
       newWin.color = this.colors[this.scenarios.indexOf(this.selScenario)];
-      this.havenWindowService.addWindow(newWin);
+      const winId = this.havenWindowService.addWindow(newWin);
+      newApp.appInfo['winId'] = winId
     }
   }
 
@@ -196,7 +222,10 @@ export class HavenSidebarPlotlyComponent implements OnInit {
         return 'plotly-heatmap';
       case '3DSurface':
         return 'plotly-3dsurface';
-
+      case 'Table':
+        return 'plotly-table';
+      case 'Garden':
+        return 'garden'
     }
   }
 
@@ -229,7 +258,7 @@ export class HavenSidebarPlotlyComponent implements OnInit {
     const date = this.dateFromDay(this.selYear, this.selDay);
     const month = this.monthNames[date.getMonth()];
     const day = date.getDate();
-    return `${month} ${day}`
+    return ` ${month} ${day}, ${this.selYear}`
   }
 
   dateFromDay(year, day): Date {
@@ -251,34 +280,23 @@ export class HavenSidebarPlotlyComponent implements OnInit {
   sliderRPSChange(event: any) {
     this.selRPS = event.value;
     const value = this.selRPS / 100;
-    this.selYear = 2017;
-    this.rpsValues.forEach(el => {
-      if (value > el.values[this.selScenario]) {
-        this.selYear = Number(el.year);
-      }
-    })
-    this.setREP();
+    this.havenDateSelector.setByRPS(value);
+    this.selYear = this.havenDateSelector.ScenarioProfiles[this.selScenario].year;
+    this.selREP = Math.trunc(this.havenDateSelector.ScenarioProfiles[this.selScenario].re * 100);
     this.queryUpdate();
   }
 
   sliderREPChange(event: any) {
     this.selREP = event.value;
     const value = this.selREP / 100;
-    this.selYear = 2017;
-    this.repValues.forEach(el => {
-      if (value > el.values[this.selScenario]) {
-        this.selYear = Number(el.year);
-      }
-    })
-    this.setRPS();
+    this.havenDateSelector.setByRE(value);
+    this.selYear = this.havenDateSelector.ScenarioProfiles[this.selScenario].year;
+    this.selRPS = Math.trunc(this.havenDateSelector.ScenarioProfiles[this.selScenario].rps * 100);
     this.queryUpdate();
   }
 
-  sliderYearChange(event: any) {
-    this.selYear = event.value;
-    this.setRPS();
-    this.setREP();
-    this.queryUpdate();
+  updateProfile() {
+    this.havenDateSelector.UpdateProfiles(this.queryMonth - 1, this.queryDay);
   }
 
   sliderDayChange(event: any) {
@@ -286,20 +304,9 @@ export class HavenSidebarPlotlyComponent implements OnInit {
     this.queryUpdate();
   }
 
-  setREP() {
-    this.repValues.forEach(el => {
-      if (this.selYear === Number(el.year)) {
-        this.selREP = Math.trunc(el.values[this.selScenario] * 100);
-      }
-    })
-  }
-
-  setRPS() {
-    this.rpsValues.forEach(el => {
-      if (this.selYear === Number(el.year)) {
-        this.selRPS = Math.trunc(el.values[this.selScenario] * 100);
-      }
-    })
+  valueChange(event: any) {
+    this.selScope = this.selOption.scopes[0];
+    this.selChart = this.selScope.charts[0];
   }
 
 }

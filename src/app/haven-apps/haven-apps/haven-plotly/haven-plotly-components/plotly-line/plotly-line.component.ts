@@ -1,4 +1,4 @@
-import { Component, OnInit, SimpleChanges, SimpleChange, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, SimpleChanges, SimpleChange, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs/Rx'
 
 import { PlotlyRange } from '../../haven-plotly-shared/plotlyRange';
@@ -6,7 +6,7 @@ import { PlotlyData } from '../../haven-plotly-shared/plotlyData';
 import { PlotlyQuery } from '../../haven-plotly-shared/plotlyQuery';
 
 import { HavenPlotlyQueryService } from '../../haven-plotly-services/haven-plotly-query.service';
-import { HavenPlotlyRangeService } from '../../haven-plotly-services/haven-plotly-range.service';
+import { HavenDateSelectorService } from '../../../../../haven-shared/haven-services/haven-date-selector.service';
 
 import { HavenAppInterface } from '../../../../haven-apps-shared/haven-app-interface';
 
@@ -15,7 +15,7 @@ import { HavenAppInterface } from '../../../../haven-apps-shared/haven-app-inter
   templateUrl: './plotly-line.component.html',
   styleUrls: ['./plotly-line.component.css']
 })
-export class PlotlyLineComponent implements HavenAppInterface, OnInit {
+export class PlotlyLineComponent implements HavenAppInterface, OnInit, OnDestroy {
 
   appInfo: any;
   plotlyData: PlotlyData;
@@ -24,9 +24,30 @@ export class PlotlyLineComponent implements HavenAppInterface, OnInit {
   @ViewChild('chart') chartDiv: ElementRef;
   loaded = false;
 
-  constructor(private changeDetector: ChangeDetectorRef, private havenPlotlyQueryService: HavenPlotlyQueryService, private havenPlotlyRangeService: HavenPlotlyRangeService) { }
+  dateSelSub: any;
+
+  constructor(
+    private changeDetector: ChangeDetectorRef,
+    private havenPlotlyQueryService: HavenPlotlyQueryService,
+    private havenDateSelectorService: HavenDateSelectorService) { }
 
   ngOnInit() {
+    this.getData();
+    this.dateSelSub = this.havenDateSelectorService.ScenarioProfilesSubs[this.appInfo.query.firestoreQuery.scenario].subscribe((profile) => {
+      this.loaded = false;
+      this.appInfo.query.firestoreQuery.year = profile.year;
+      this.appInfo.query.firestoreQuery.month = profile.month;
+      this.appInfo.query.firestoreQuery.day = profile.day;
+      this.havenPlotlyQueryService.UpdateWindowName(this.appInfo.winId, this.appInfo.query.firestoreQuery);
+      this.getData();
+    })
+  }
+
+  ngOnDestroy() {
+    this.dateSelSub.unsubscribe();
+  }
+
+  getData() {
     this.havenPlotlyQueryService.getData(this.appInfo.query).then((data) => {
       this.plotlyData = data;
       this.plotlyData.data = this.formatData(this.plotlyData.data);

@@ -1,0 +1,31 @@
+.image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  
+}
+
+.loading-image {
+    width: 100px;
+    height: 100px;
+}
+
+.mat-table {
+  max-height: 100%;
+  width: 100%;
+  overflow: auto;
+  background-color: transparent;
+}
+
+
+.exg {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+.mat-header-cell.mat-sort-header-sorted {
+  color: black;
+}

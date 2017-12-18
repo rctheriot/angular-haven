@@ -53,6 +53,37 @@ export class HavenFirestoreQueryService {
     })
   }
 
+  public getNetLoad(query: HavenFirestoreQuery): Promise<any> {
+    const data = [];
+    return this.getCapacityData(query).then(capacityData => {
+      return this.getLoadData(query).then(loadData => {
+        return this.getProfileData(query).then(profileData => {
+          profileData.forEach(profileDataPoint => {
+            const time = profileDataPoint[0];
+            const year = time.getFullYear();
+            const profiles = profileDataPoint[1];
+            const load = loadData.find(element => element[0].getTime() === time.getTime())[1];
+            const capacity = capacityData.find(element => element[0] === year)[1];
+            data.push([time, load]);
+            capacity.forEach(el => {
+              const profile = profiles[el.resource];
+              if (profile != null) {
+                const supply = profile * el.capacity;
+                data[data.length - 1][1] -= supply;
+              }
+            })
+          })
+          data.sort((a, b) => b[1] - a[1]);
+          const objectData = {};
+          data.forEach(el => {
+            objectData[el[0]] = {Load: el[1] };
+          })
+          return Promise.resolve(objectData);
+        })
+      })
+    })
+  }
+
   public getSupply(query: HavenFirestoreQuery): Promise<any> {
     let data = {};
     return this.getCapacityData(query).then(capacityData => {
@@ -81,6 +112,51 @@ export class HavenFirestoreQueryService {
           data = this.consolidateData(data, query);
           return Promise.resolve(data);
         })
+      })
+    })
+  }
+
+  public getSolarYearlyMW(query: HavenFirestoreQuery): Promise<any> {
+    let value = 0;
+    query.scope = 'monthly';
+    return this.getCapacityData(query).then(capacityData => {
+      return this.getProfileData(query).then(profileData => {
+        profileData.forEach(profileDataPoint => {
+          const time = profileDataPoint[0];
+          const year = time.getFullYear();
+          const profiles = profileDataPoint[1];
+          const capacity = capacityData.find(element => element[0] === year)[1];
+          capacity.forEach(el => {
+            const profile = profiles[el.resource];
+            if (profile != null && (el.station === 'FuturePV' || el.station === 'CBRE PV')) {
+              const supply = profile * el.capacity;
+              value += supply;
+            }
+          })
+        })
+        return Promise.resolve(value);
+      })
+    })
+  }
+
+  public getWindYearlyMW(query: HavenFirestoreQuery): Promise<any> {
+    let value = 0;
+    return this.getCapacityData(query).then(capacityData => {
+      return this.getProfileData(query).then(profileData => {
+        profileData.forEach(profileDataPoint => {
+          const time = profileDataPoint[0];
+          const year = time.getFullYear();
+          const profiles = profileDataPoint[1];
+          const capacity = capacityData.find(element => element[0] === year)[1];
+          capacity.forEach(el => {
+            const profile = profiles[el.resource];
+            if (profile != null && (el.station === 'FutureWind')) {
+              const supply = profile * el.capacity;
+              value += supply;
+            }
+          })
+        })
+        return Promise.resolve(value);
       })
     })
   }

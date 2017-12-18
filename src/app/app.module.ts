@@ -29,8 +29,10 @@ import { HavenMainComponent } from './haven-main/haven-main.component';
 import { HavenHomeComponent } from './haven-home/haven-home.component';
 
 // Haven Services
-import { HavenFirestoreQueryService } from './haven-shared/haven-services/haven-firestore-query.service'
+import { HavenFirestoreQueryService } from './haven-shared/haven-services/haven-firestore-query.service';
 import { HavenDatabaseQueryService } from './haven-shared/haven-services/haven-database-query.service';
+import { HavenDateSelectorService } from './haven-shared/haven-services/haven-date-selector.service';
+import { HavenLeafletService } from './haven-apps/haven-apps/haven-leaflet/haven-leaflet-services/haven-leaflet.service';
 
 @NgModule({
   imports: [
@@ -60,6 +62,8 @@ import { HavenDatabaseQueryService } from './haven-shared/haven-services/haven-d
     AuthGuard,
     HavenDatabaseQueryService,
     HavenFirestoreQueryService,
+    HavenDateSelectorService,
+    HavenLeafletService,
   ],
   bootstrap: [AppComponent]
 })

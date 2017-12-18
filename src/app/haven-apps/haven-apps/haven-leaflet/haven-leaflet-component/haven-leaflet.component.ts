@@ -1,33 +1,65 @@
-import { Component, ViewChild, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  OnDestroy,
+  OnInit,
+  trigger,
+  state,
+  style,
+  transition,
+  animate,
+  keyframes
+} from '@angular/core';
 import * as L from 'leaflet';
 
-import { AngularFireAuth } from 'angularfire2/auth'
-import { AngularFireDatabase } from 'angularfire2/database'
-import * as firebase from 'firebase/app'
-import 'firebase/storage'
-
-import { HavenLeafletService } from '../haven-leaflet-services/haven-leaflet.service'
+import { HavenLeafletService } from '../haven-leaflet-services/haven-leaflet.service';
+import { HavenFirestoreQueryService } from '../../../../haven-shared/haven-services/haven-firestore-query.service';
+import { HavenWindowService } from '../../../../haven-window/haven-window-services/haven-window.service';
+import { HavenDateSelectorService } from '../../../../haven-shared/haven-services/haven-date-selector.service';
 
 import { HavenAppInterface } from '../../../haven-apps-shared/haven-app-interface';
+import { GeoJsonObject } from 'geojson';
 
 @Component({
   selector: 'app-haven-leaflet',
   templateUrl: './haven-leaflet.component.html',
-  styleUrls: ['./haven-leaflet.component.css']
+  styleUrls: ['./haven-leaflet.component.css'],
+  animations: [
+    trigger('movePanel', [
+      state('active', style({
+        transform: 'translate(10px, 0px)',
+      })),
+      state('inactive', style({
+        transform: 'translate(-140px, 0px)',
+      })),
+      transition('active => inactive', animate('500ms ease-in-out')),
+      transition('inactive => active', animate('500ms ease-in-out'))
+    ]),
+  ],
 })
-export class HavenLeafletComponent implements HavenAppInterface, OnDestroy {
+export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestroy {
 
   appInfo: any;
 
   @ViewChild('mapDiv') mapDiv;
+  @ViewChild('sidebartab') sidebartab;
 
   map: any;
-  geoJson: any;
 
-  layerkey = {};
-  subscriptions = [];
+  state = 'inactive';
 
-  layer1: boolean;
+  loaded = false;
+
+  layers = [];
+
+  solarMWtotal: number;
+  solarEnabled: boolean;
+  windMWtotal: number;
+  windEnabled: boolean;
+
+  dateSelSub: any;
+
+  colorScheme = ['#EC5f67', '#F99157', '#FAC863', '#99C794', '#6699CC', '#C594C5', '#AB7967'];
 
   options = {
     layers: [
@@ -41,21 +73,223 @@ export class HavenLeafletComponent implements HavenAppInterface, OnDestroy {
     center: L.latLng([21.440066, -157.999602])
   };
 
-  constructor(private afAuth: AngularFireAuth, private afDb: AngularFireDatabase, private havenLeafletService: HavenLeafletService) { }
+  constructor(
+    private havenLeafletService: HavenLeafletService,
+    private fsQueryService: HavenFirestoreQueryService,
+    private havenDateSelectorService: HavenDateSelectorService,
+    private havenWindowService: HavenWindowService
+  ) { }
 
-  setMap(map: L.Map) {
-    this.map = map;
-    this.havenLeafletService.setMap(this.map);
-    this.havenLeafletService.checkActiveLayers();
-  }
+  ngOnInit() {
+    const titl = `${this.appInfo.query.scenario.toUpperCase()} - Map - ${this.appInfo.query.year}`;
+    this.havenWindowService.getWindow(this.appInfo.winId).then((window) => window.title = titl);
+    this.loaded = false;
+    this.solarEnabled = false;
+    this.windEnabled = false;
+    this.havenLeafletService.getLayers().then((layers) => {
+      layers.forEach(lay => {
+        const geojsonFeature: GeoJSON.FeatureCollection<any> = {
+          'type': 'FeatureCollection',
+          'features': []
+        };
 
+        const features = lay.data.features;
+        features.forEach(element => {
+          element.properties['name'] = lay.name;
+          element.properties['popupContent'] = lay.name;
 
-  resize() {
-    this.map.invalidateSize();
+          if (element.properties['cf']) {
+            geojsonFeature.features.push(element);
+          } else if (element.properties['MWac']) {
+            if (element.properties['NAME'] === 'Oahu') {
+              geojsonFeature.features.push(element);
+            }
+          } else if (element.properties['level1']) {
+            if (element.properties['level1'] === 'developed' && lay.name === 'Land Use') {
+              geojsonFeature.features.push(element);
+            } else if (element.properties['level1'] === 'agriculture' && lay.name === 'Agricultural') {
+              geojsonFeature.features.push(element);
+            }
+          } else if (element.properties['FLD_ZONE']) {
+            if (element.properties['FLD_ZONE'] === 'A') {
+              geojsonFeature.features.push(element);
+            }
+          } else {
+            geojsonFeature.features.push(element);
+          }
+
+        });
+        const newLayer = L.geoJSON(geojsonFeature, {
+          style: (feature) => ({
+            color: this.colorScheme[lay.id],
+          }),
+          onEachFeature: (feature, layer) => { this.onEachFeature(feature, layer) },
+        });
+        this.layers.push(({ name: lay.name, layer: newLayer, id: lay.id }));
+      })
+    }).then(() => {
+      this.appInfo.query.scope = 'monthly';
+      this.fsQueryService.getSolarYearlyMW(this.appInfo.query).then((total) => {
+        this.solarMWtotal = total;
+      }).then(() => {
+        this.fsQueryService.getWindYearlyMW(this.appInfo.query).then((total) => {
+          this.windMWtotal = total;
+          this.loaded = true;
+        })
+      })
+    });
+
+    this.dateSelSub = this.havenDateSelectorService.ScenarioProfilesSubs[this.appInfo.query.scenario].subscribe((profile) => {
+      if (profile.year && (profile.year !== this.appInfo.query.year)) { this.appInfo.query.year = profile.year; }
+      else { return; }
+      this.appInfo.query.month = profile.month;
+      this.appInfo.query.day = profile.day;
+      const title = `${this.appInfo.query.scenario.toUpperCase()} - Map - ${this.appInfo.query.year}`;
+      this.havenWindowService.getWindow(this.appInfo.winId).then(window => window.title = title);
+      this.updateSolar();
+      this.updateWind();
+    })
   }
 
   ngOnDestroy() {
-    this.havenLeafletService.hideMap();
+    this.dateSelSub.unsubscribe();
   }
+
+  onEachFeature(feature, layer) {
+    if (feature.properties && feature.properties.popupContent) {
+      layer.bindPopup(feature.properties.popupContent);
+      layer.setStyle({ weight: 1, fillOpacity: 0.5 });
+
+    }
+  }
+  setMap(map: L.Map) {
+    this.map = map;
+  }
+  resize() {
+    if (this.loaded) {
+      this.map.invalidateSize();
+    }
+  }
+
+  toggleMenu() {
+    this.state = (this.state === 'inactive' ? 'active' : 'inactive');
+  }
+
+  toggleLayer(event) {
+    if (event.source.name === 'Solar') { this.solarEnabled = event.checked; }
+    if (event.source.name === 'Wind') { this.windEnabled = event.checked; }
+    if (event.checked) {
+      this.showLayer(event.source.name);
+    } else {
+      this.hideLayer(event.source.name);
+    }
+  }
+
+  showLayer(layerName: string) {
+    if (this.map) {
+      this.layers.forEach(el => {
+        if (el.name === layerName) {
+          if (el.name === 'Solar') {
+            this.loadSolar(el);
+            return;
+          }
+          if (el.name === 'Wind') {
+            this.loadWind(el);
+            return;
+          }
+          this.map.addLayer(el.layer);
+          return;
+        }
+      });
+    }
+  }
+
+  hideLayer(layername: any) {
+    if (this.map) {
+      this.layers.forEach(el => {
+        if (el.name === layername) {
+          this.map.removeLayer(el.layer);
+          return;
+        }
+      });
+    }
+  }
+
+  loadSolar(layer: any) {
+    const layerProps = [];
+    for (const lay in layer.layer._layers) {
+      const properties = layer.layer._layers[lay].feature.properties;
+      const options = layer.layer._layers[lay].options;
+      const cf = properties.cf;
+      const mwac = properties.MWac;
+      layerProps.push([cf, { value: mwac * cf * 8760, options }]);
+    }
+    layerProps.sort((a, b) => b[0] - a[0]);
+    let total = this.solarMWtotal;
+    layerProps.forEach(el => {
+      total -= el[1].value;
+      el[1].options.weight = 0;
+      if (total > 0) {
+        el[1].options.fillColor = 'rgba(249, 145, 87, 1.0)';
+      } else {
+        el[1].options.fillColor = 'rgba(253, 222, 206, 1.0)'
+      }
+    })
+    if (this.solarEnabled) { this.map.addLayer(layer.layer); }
+  }
+
+  loadWind(layer: any) {
+    const layerProps = [];
+    for (const lay in layer.layer._layers) {
+      const properties = layer.layer._layers[lay].feature.properties;
+      const options = layer.layer._layers[lay].options;
+      const mwac = properties['MWac'];
+      const sqkm = properties['SQKM'];
+      const spdcls = Number(properties['SPD_CLS'].split('-')[0]);
+      const cf = 0.2283942;
+      layerProps.push([spdcls, sqkm, { value: mwac * cf * 8760, options }]);
+    }
+    layerProps.sort((a, b) => b[0] - a[0] || b[1] - a[1]);
+    let total = this.windMWtotal;
+    layerProps.forEach(el => {
+      total -= el[2].value;
+      el[2].options.weight = 0;
+      if (total > 0) {
+        el[2].options.fillColor = 'rgba(250, 200, 100, 1.0)';
+      } else {
+        el[2].options.fillColor = 'rgba(253, 237, 206, 1.0)';
+      }
+    })
+    if (this.windEnabled) { this.map.addLayer(layer.layer); }
+  }
+
+  updateSolar() {
+    this.fsQueryService.getSolarYearlyMW(this.appInfo.query).then((total) => {
+      this.solarMWtotal = total;
+      this.layers.forEach(el => {
+        if (el.name === 'Solar') {
+          this.map.removeLayer(el.layer);
+          this.loadSolar(el);
+        }
+      });
+    })
+  }
+
+  updateWind() {
+    this.fsQueryService.getWindYearlyMW(this.appInfo.query).then((total) => {
+      this.windMWtotal = total;
+      this.layers.forEach(el => {
+        if (el.name === 'Wind') {
+          this.map.removeLayer(el.layer);
+          this.loadWind(el);
+        }
+      });
+    })
+  }
+
+  updateQuery() {
+
+  }
+
 
 }

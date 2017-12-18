@@ -1,6 +1,26 @@
-<div #child  #mapDiv
-  style="height: 100%; width: 100%;" 
+
+<div *ngIf="!loaded" class="image">
+  <img class="loading-image" src="./assets/images/haven-animation.gif">
+</div>
+
+<div *ngIf="loaded" 
+  #child 
+  #mapDiv style="height: 100%; width: 100%;" 
   leaflet 
-  [leafletOptions]="options"
+  [leafletOptions]="options" 
   (leafletMapReady)="setMap($event)">
+</div>
+
+<div id="content" [@movePanel]='state' class="container sidebar" #sidebartab *ngIf="loaded">
+
+  <div (click)="toggleMenu()" class="menuButton">
+    <div class="menuButton-text">Legend</div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm" *ngFor="let layer of layers;">
+      <mat-slide-toggle ngClass="slide-{{layer.id}}" name="{{layer.name}}" (change)="toggleLayer($event)">{{ layer.name }}</mat-slide-toggle>
+    </div>
+  </div>
+
 </div>

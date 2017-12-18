@@ -1,0 +1,10 @@
+<div *ngIf="!loaded" class="image">
+  <img class="loading-image" src="./assets/images/haven-animation.gif">
+</div>
+
+<img class="hidden" #leaf>
+<img class="hidden" #drop>
+    
+<div *ngIf="loaded" #chart> 
+      <canvas #myCanvas width="1728" height="287" resize="true"></canvas>
+</div>
