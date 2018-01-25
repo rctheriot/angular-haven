@@ -143,6 +143,23 @@ export class HavenSidebarPlotlyComponent implements OnInit {
     'Garden': 'garden'
   }
 
+  selLoad = 'load_base';
+
+  loadData = [
+    {
+      name: 'Base',
+      value: 'load_base'
+    },
+    {
+      name: 'Smart Charge',
+      value: 'load_smart_charge'
+    },
+    {
+      name: 'Dumb Charge',
+      value: 'load_dumb_charge'
+    },
+  ]
+
   monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   colors = ['#6699CC', '#99C794', '#F99157']
@@ -180,6 +197,7 @@ export class HavenSidebarPlotlyComponent implements OnInit {
       'monthly',
       this.selScenario.toLowerCase(),
       this.selOption.valueType.toLowerCase(),
+      this.selLoad,
       false,
     )
     newApp.appInfo = { query: firestoreQuery };
@@ -199,12 +217,15 @@ export class HavenSidebarPlotlyComponent implements OnInit {
         this.selScope.name.toLowerCase(),
         this.selScenario.toLowerCase(),
         this.selOption.valueType.toLowerCase(),
+        this.selLoad,
         consolidate,
       )
       const newApp = new HavenApp();
       newApp.appName = this.getApp();
-      newApp.appInfo = { query: new PlotlyQuery(firestoreQuery, this.chartTypeDict[this.selChart]) };
-      const newWin = new HavenWindow(newApp, this.getChartWindowTitle());
+      newApp.appInfo = { query: new PlotlyQuery(firestoreQuery, this.chartTypeDict[this.selChart]), windowLock: false };
+      let newWin = null;
+      if (firestoreQuery.type === 'netload') {newWin = new HavenWindow(newApp, this.getChartWindowTitle(), 775, 625, 450, 400); newApp.appInfo.windowLock = true; }
+      else {newWin = new HavenWindow(newApp, this.getChartWindowTitle()); }
       if (this.selChart === 'Garden') { newWin.size.width = 1758; newWin.size.height = 342; }
       newWin.color = this.colors[this.scenarios.indexOf(this.selScenario)];
       const winId = this.havenWindowService.addWindow(newWin);

@@ -17,6 +17,11 @@
       <mat-icon>crop_square</mat-icon>
     </button>
 
+    <button mat-fab (click)="lockWindow()" class="navbarButton lock">
+      <mat-icon *ngIf="windowLock">lock</mat-icon>
+      <mat-icon *ngIf="!windowLock">lock_open</mat-icon>
+    </button>
+
     <mat-slider class="transparentSlider" color='accent' 
       [min]="0" 
       [max]="1" 

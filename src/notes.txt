@@ -1,0 +1,29 @@
+net load = load - ALL RENEWABLE ENERGY SUPPLY
+Fossil supply <0 ordered from largest to greatest
+
+
+cf * MWac * 8760 
+Order by CF for highest 
+CBREPV / Future PV
+
+Priority List
+PV Map
+Netload Charts
+Chart/Map Sync to Slider
+
+
+Wind Map (depending on HSEO)
+  Sort by SPD_CLS and then SQKM 
+  CF - 22.84% - .2283942
+
+
+Jan 17th
+
+Three new scenarios, one for each of the existing ones
+Have those use a new different load shape
+Able to toggle between old and new load
+Highlight map the different color 
+
+Map for solar maps will have a percentage that will be a different colors for "EV Cars"
+
+Gonna be given a load shape for each hour and will given a yearly capacity value for each new modifer

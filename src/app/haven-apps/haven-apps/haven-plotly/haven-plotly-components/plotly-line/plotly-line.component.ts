@@ -9,6 +9,7 @@ import { HavenPlotlyQueryService } from '../../haven-plotly-services/haven-plotl
 import { HavenDateSelectorService } from '../../../../../haven-shared/haven-services/haven-date-selector.service';
 
 import { HavenAppInterface } from '../../../../haven-apps-shared/haven-app-interface';
+import { HavenFirestoreQuery } from 'app/haven-shared/haven-services/haven-firestore-query';
 
 @Component({
   selector: 'app-plotly-line',
@@ -34,12 +35,14 @@ export class PlotlyLineComponent implements HavenAppInterface, OnInit, OnDestroy
   ngOnInit() {
     this.getData();
     this.dateSelSub = this.havenDateSelectorService.ScenarioProfilesSubs[this.appInfo.query.firestoreQuery.scenario].subscribe((profile) => {
-      this.loaded = false;
-      this.appInfo.query.firestoreQuery.year = profile.year;
-      this.appInfo.query.firestoreQuery.month = profile.month;
-      this.appInfo.query.firestoreQuery.day = profile.day;
-      this.havenPlotlyQueryService.UpdateWindowName(this.appInfo.winId, this.appInfo.query.firestoreQuery);
-      this.getData();
+      if (!this.appInfo.windowLock) {
+        this.loaded = false;
+        this.appInfo.query.firestoreQuery.year = profile.year;
+        this.appInfo.query.firestoreQuery.month = profile.month;
+        this.appInfo.query.firestoreQuery.day = profile.day;
+        this.havenPlotlyQueryService.UpdateWindowName(this.appInfo.winId, this.appInfo.query.firestoreQuery);
+        this.getData();
+      }
     })
   }
 
@@ -102,6 +105,42 @@ export class PlotlyLineComponent implements HavenAppInterface, OnInit, OnDestroy
 
     Plotly.newPlot(this.chartDiv.nativeElement, this.plotlyData.data, layout);
 
+    if (this.appInfo.query.firestoreQuery.type === 'supply' || this.appInfo.query.firestoreQuery.type === 'load') {
+      this.chartDiv.nativeElement.on('plotly_click', (data) => {
+        let scope = this.appInfo.query.firestoreQuery.scope;
+        let title = '';
+        const queryClone = JSON.parse(JSON.stringify(this.appInfo.query.firestoreQuery)) as HavenFirestoreQuery;
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        if (scope === 'yearly') {
+          const year = Number(data.points[0].x);
+          queryClone.year = year;
+          scope = 'monthly';
+          title = `${queryClone.scenario.toUpperCase()} ${queryClone.type} - ${year}`;
+        } else if (scope === 'monthly') {
+          const year = Number(data.points[0].x.split('-')[0]);
+          const month = Number(data.points[0].x.split('-')[1]);
+          queryClone.year = year;
+          queryClone.month = month;
+          scope = 'daily';
+          title = `${queryClone.scenario.toUpperCase()} ${queryClone.type} - ${monthNames[month]} ${year}`;
+        } else if (scope === 'daily') {
+          const year = Number(data.points[0].x.split('-')[0]);
+          const month = Number(data.points[0].x.split('-')[1]);
+          const day = Number(data.points[0].x.split('-')[2]);
+          queryClone.year = year;
+          queryClone.month = month;
+          queryClone.day = day;
+          scope = 'hourly';
+          title = `${queryClone.scenario.toUpperCase()} ${queryClone.type} - ${monthNames[month]} ${day}, ${year}`;
+        } else {
+          return;
+        };
+
+        queryClone.scope = scope;
+        this.havenPlotlyQueryService.createPlotlyWindow(queryClone, title);
+      });
+    }
   }
 
   resize() {

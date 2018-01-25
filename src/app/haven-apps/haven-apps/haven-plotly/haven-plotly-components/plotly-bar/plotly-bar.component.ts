@@ -33,12 +33,14 @@ export class PlotlyBarComponent implements HavenAppInterface, OnInit, OnDestroy 
   ngOnInit() {
     this.getData();
     this.dateSelSub = this.havenDateSelectorService.ScenarioProfilesSubs[this.appInfo.query.firestoreQuery.scenario].subscribe((profile) => {
-      this.loaded = false;
-      this.appInfo.query.firestoreQuery.year = profile.year;
-      this.appInfo.query.firestoreQuery.month = profile.month;
-      this.appInfo.query.firestoreQuery.day = profile.day;
-      this.havenPlotlyQueryService.UpdateWindowName(this.appInfo.winId, this.appInfo.query.firestoreQuery);
-      this.getData();
+      if (!this.appInfo.windowLock) {
+        this.loaded = false;
+        this.appInfo.query.firestoreQuery.year = profile.year;
+        this.appInfo.query.firestoreQuery.month = profile.month;
+        this.appInfo.query.firestoreQuery.day = profile.day;
+        this.havenPlotlyQueryService.UpdateWindowName(this.appInfo.winId, this.appInfo.query.firestoreQuery);
+        this.getData();
+      }
     })
   }
 

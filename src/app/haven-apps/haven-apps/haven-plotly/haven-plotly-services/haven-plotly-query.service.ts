@@ -8,9 +8,15 @@ import 'rxjs/add/operator/map';
 
 import { HavenFirestoreQueryService } from '../../../../haven-shared/haven-services/haven-firestore-query.service';
 import { HavenWindowService } from '../../../../haven-window/haven-window-services/haven-window.service';
+import { HavenWindow } from '../../../../haven-window/haven-window-shared/haven-window';
+import { HavenWindowComponent } from '../../../../haven-window/haven-window-component/haven-window.component';
+import { HavenApp } from '../../../../haven-apps/haven-apps-shared/haven-app';
 
 import { PlotlyData } from '../haven-plotly-shared/plotlyData';
 import { PlotlyQuery } from '../haven-plotly-shared/plotlyQuery';
+import { HavenFirestoreQuery } from 'app/haven-shared/haven-services/haven-firestore-query';
+
+
 
 @Injectable()
 export class HavenPlotlyQueryService {
@@ -18,14 +24,17 @@ export class HavenPlotlyQueryService {
   private dbRef;
 
   public plotlyColors = {
-    'Fossil': '#d95f02',
+    'Fossil': '#e6ab02',
     'BioFuel': '#a6761d',
     'Biomass': '#66a61e',
-    'Solar': '#e6ab02',
+    'Solar': '#F99157',
     'Wind': '#7570b3',
     'Offshore Wind': '#1b9e77',
     'Load': '#666666',
   }
+
+  scenarios = ['e3', 'postapril', 'e3genmod']
+  colors = ['#6699CC', '#99C794', '#F99157']
 
   monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -86,7 +95,6 @@ export class HavenPlotlyQueryService {
 
   public UpdateWindowName(winId: number, query: any) {
     let title = '';
-    console.log(query);
     switch (query.scope) {
       case 'yearly':
         title = `${query.scenario.toUpperCase()} ${query.type}  2016 - 2045`;
@@ -109,6 +117,16 @@ export class HavenPlotlyQueryService {
 
   private titleMonth(month: number): string {
     return this.monthNames[month];
+  }
+
+  public createPlotlyWindow(firestoreQuery: HavenFirestoreQuery, windowTitle: string) {
+      const newApp = new HavenApp();
+      newApp.appName = 'plotly-line';
+      newApp.appInfo = { query: new PlotlyQuery(firestoreQuery, 'scatter') };
+      const newWin = new HavenWindow(newApp, windowTitle);
+      newWin.color = this.colors[this.scenarios.indexOf(firestoreQuery.scenario)];
+      const winId = this.havenWindowService.addWindow(newWin);
+      newApp.appInfo['winId'] = winId
   }
 
 }

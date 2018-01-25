@@ -571,13 +571,12 @@ export class GardenComponent implements HavenAppInterface, OnInit {
     if (this.loaded === true) {
       const height = this.chartDiv.nativeElement.getBoundingClientRect().height;
       const width = this.chartDiv.nativeElement.getBoundingClientRect().width;
-      console.log(height, width);
       const canvas = <HTMLCanvasElement>this.canvasElement.nativeElement;
       const originalBounds = 1728 + 287;
-      canvas.width = width;
-      canvas.height = height - 10;
+      // canvas.width = width;
+      // canvas.height = height;
       this.renderCapacity();
-      this.plants.scale((canvas.width + canvas.height) / originalBounds);
+      this.plants.scale((width + height) / originalBounds);
     }
   }
 }

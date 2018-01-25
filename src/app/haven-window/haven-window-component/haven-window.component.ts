@@ -28,10 +28,12 @@ export class HavenWindowComponent implements AfterViewInit {
   resizeStartWidth: number;
   resizeStartHeight: number;
 
+  windowLock = false;
+
   constructor(private havenWindowService: HavenWindowService, private _renderer: Renderer) { }
 
   ngAfterViewInit() {
-
+    this.windowLock = this.havenWindow.app.appInfo.windowLock;
     this.windowDiv.nativeElement.style.width = this.havenWindow.size.width + 'px';
     this.windowDiv.nativeElement.style.height = this.havenWindow.size.height + 'px';
     this.windowDiv.nativeElement.style.left = this.havenWindow.position.left + 'px';
@@ -135,6 +137,11 @@ export class HavenWindowComponent implements AfterViewInit {
 
   bringForward() {
     this.havenWindowService.bringWindowForward(this.havenWindow.id);
+  }
+
+  lockWindow() {
+    this.havenWindow.app.appInfo.windowLock = !this.havenWindow.app.appInfo.windowLock;
+    this.windowLock = this.havenWindow.app.appInfo.windowLock;
   }
 
 }

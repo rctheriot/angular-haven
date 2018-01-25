@@ -12,11 +12,11 @@ export class HavenLeafletService {
 
   constructor() {
     this.loadFeatureLayer('mapdata/DOD_Parcels.json', 'DOD', 0);
-    this.loadFeatureLayer('mapdata/nrel_pv_10pct.json', 'Solar', 1);
-    this.loadFeatureLayer('mapdata/nrel_wind.json', 'Wind', 2);
+    this.loadFeatureLayer('mapdata/nrel_pv_10pct_5acre_square_join.json', 'Solar', 1);
+    this.loadFeatureLayer('mapdata/nrel_wind_25acre_join.json', 'Wind', 5);
     this.loadFeatureLayer('mapdata/Oahu_Land_Use_1998.json', 'Agricultural', 3);
-    this.loadFeatureLayer('mapdata/Flood_Zones.json', 'Flood Zones', 4);
-    this.loadFeatureLayer('mapdata/Oahu_Land_Use_1998.json', 'Land Use', 5);
+    this.loadFeatureLayer('mapdata/existing_re.json', 'Existing RE', 4);
+    this.loadFeatureLayer('mapdata/Oahu_Land_Use_1998.json', 'Land Use', 2);
     this.loadFeatureLayer('mapdata/Parks_State_Polygon.json', 'State Parks', 6);
   }
 

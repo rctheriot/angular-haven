@@ -26,7 +26,6 @@ export class HavenAppsFactoryComponent implements OnInit {
   }
 
   addApp(havenWindow: HavenWindow) {
-    console.log(havenWindow);
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(HavenAppList.apps[havenWindow.app.appName]);
     const viewContainerRef = this.havenAppsHost.viewContainerRef;
     this.componentRef = viewContainerRef.createComponent(componentFactory);

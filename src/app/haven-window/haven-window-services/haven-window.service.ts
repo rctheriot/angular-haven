@@ -43,6 +43,7 @@ export class HavenWindowService {
     this.clearWindows();
     Windows.forEach( el => {
       this.addWindow(el);
+      el.app.appInfo.winId = el.id;
     })
   }
 

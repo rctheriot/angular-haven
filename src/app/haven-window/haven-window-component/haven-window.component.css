@@ -43,7 +43,7 @@
   top: 0px;
   background-color: #a9b6bc;
   color:white;
-  width: calc(100% - 200px);
+  width: calc(100% - 220px);
   height: 30px;
   transform: translateY(-5px);
   border-radius: 4px 0px 50px 0px;
@@ -72,6 +72,10 @@
 /* Maximize and Close Buttons */
 .navbarButton.maximize.mat-fab {
   background-color: #3aa056; 
+}
+/* Maximize and Close Buttons */
+.navbarButton.lock.mat-fab {
+  background-color: #e16b16; 
 }
 .navbarButton.mat-fab {
   height: 20px; 
@@ -124,9 +128,21 @@
   background-color: #a9b6bc;
   border-radius: 4px 0px 0px 0px;
 }
+
 .resizeBox:hover {
   cursor: grab;
 }
 .resizeBox:active {
   cursor: grabbing;
+}
+
+.lockBox {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  left: 0px;
+  top: calc(100% - 25px);
+  object-fit: contain;
+  background-color: #a9b6bc;
+  border-radius: 0px 0px 4px 0px;
 }

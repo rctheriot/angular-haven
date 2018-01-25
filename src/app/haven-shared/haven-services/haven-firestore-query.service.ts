@@ -3,6 +3,10 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
 
 import { HavenFirestoreQuery } from './haven-firestore-query';
+import { HavenWindow } from '../../haven-window/haven-window-shared/haven-window';
+import { HavenApp } from '../../haven-apps/haven-apps-shared/haven-app';
+import { HavenWindowService } from '../../haven-window/haven-window-services/haven-window.service';
+import { PlotlyQuery } from '../../haven-apps/haven-apps/haven-plotly/haven-plotly-shared/plotlyQuery';
 import * as firebase from 'firebase';
 import 'rxjs/add/operator/take';
 
@@ -12,7 +16,7 @@ export class HavenFirestoreQueryService {
   private keys = [];
   private dbRef;
 
-  constructor(private db: AngularFirestore) {
+  constructor(private db: AngularFirestore, private havenWindowService: HavenWindowService) {
     this.dbRef = this.db.collection('data').doc('haven2017');
     this.dbRef.collection('key', ref => ref
       .orderBy('id', 'asc'))
@@ -76,12 +80,45 @@ export class HavenFirestoreQueryService {
           data.sort((a, b) => b[1] - a[1]);
           const objectData = {};
           data.forEach(el => {
-            objectData[el[0]] = {Load: el[1] };
+            objectData[el[0]] = { Load: el[1] };
           })
+          this.addNetLoadLineChart(query, data[0][0], 'High');
+          this.addNetLoadLineChart(query, data[data.length - 1][0], 'Low');
+          this.add3DNetLoadChart(query);
           return Promise.resolve(objectData);
         })
       })
     })
+  }
+
+  private addNetLoadLineChart(query: HavenFirestoreQuery, date: Date, which: string) {
+    const queryClone = JSON.parse(JSON.stringify(query)) as HavenFirestoreQuery;
+    queryClone.type = 'supply';
+    queryClone.scope = 'hourly';
+    queryClone.month = date.getMonth();
+    queryClone.day = date.getDate();
+    const newApp = new HavenApp();
+    newApp.appName = 'plotly-line';
+    newApp.appInfo = { query: new PlotlyQuery(queryClone, 'scatter'), windowLock: true };
+    let newWin = null;
+    if (which === 'High') {
+      newWin = new HavenWindow(newApp, `${queryClone.scenario.toUpperCase()} - NetLoad - ${which}`, 300, 200, 450, 400);
+    } else {
+      newWin = new HavenWindow(newApp, `${queryClone.scenario.toUpperCase()} - NetLoad - ${which}`, 1250, 200, 450, 400);
+    }
+    const winId = this.havenWindowService.addWindow(newWin);
+    newApp.appInfo['winId'] = winId;
+  }
+
+  private add3DNetLoadChart(query: HavenFirestoreQuery) {
+    const queryClone = JSON.parse(JSON.stringify(query)) as HavenFirestoreQuery;
+    queryClone.type = 'load';
+    const newApp = new HavenApp();
+    newApp.appName = 'plotly-3dsurface';
+    newApp.appInfo = { query: new PlotlyQuery(queryClone, '3dsurf'), windowLock: true };
+    const newWin = new HavenWindow(newApp, `${queryClone.scenario.toUpperCase()} - NetLoad - 3DLoad`, 775, 200, 450, 400);
+    const winId = this.havenWindowService.addWindow(newWin);
+    newApp.appInfo['winId'] = winId;
   }
 
   public getSupply(query: HavenFirestoreQuery): Promise<any> {
@@ -89,28 +126,32 @@ export class HavenFirestoreQueryService {
     return this.getCapacityData(query).then(capacityData => {
       return this.getLoadData(query).then(loadData => {
         return this.getProfileData(query).then(profileData => {
-          profileData.forEach(profileDataPoint => {
-            const time = profileDataPoint[0];
-            const year = time.getFullYear();
-            const profiles = profileDataPoint[1];
-            const load = loadData.find(element => element[0].getTime() === time.getTime())[1];
-            const capacity = capacityData.find(element => element[0] === year)[1];
-            data[time] = {};
-            data[time]['Fossil'] = load;
-            // data[time]['Load'] = load
-            capacity.forEach(el => {
-              const profile = profiles[el.resource];
-              if (profile != null) {
-                const newStation = {}
-                if (!data[time][el.type]) { data[time][el.type] = 0; }
-                const supply = profile * el.capacity;
-                data[time][el.type] += supply;
-                data[time]['Fossil'] = Math.max(0, data[time]['Fossil'] - supply);
-              }
+          return this.getFossilSupplyData(query).then(fossilSupplyData => {
+            profileData.forEach(profileDataPoint => {
+              const time = profileDataPoint[0];
+              const year = time.getFullYear();
+              const profiles = profileDataPoint[1];
+              const load = loadData.find(element => element[0].getTime() === time.getTime())[1];
+              const capacity = capacityData.find(element => element[0] === year)[1];
+              const fossilSupply = fossilSupplyData.find(element => element[0].getTime() === time.getTime())[1];
+              const modifer = 1.00;
+              data[time] = {};
+              data[time]['Fossil'] = (fossilSupply.Coal + fossilSupply.Diesel + fossilSupply.LSFO + fossilSupply.ULSD) * modifer;
+              data[time]['Load'] = load;
+              capacity.forEach(el => {
+                const profile = profiles[el.resource];
+                if (profile != null) {
+                  const newStation = {}
+                  if (!data[time][el.type]) { data[time][el.type] = 0; }
+                  const supply = profile * el.capacity * modifer;
+                  data[time][el.type] += supply;
+                }
+              })
+              data[time]['BioFuel'] = fossilSupply.BioMass + fossilSupply.BioDiesel * modifer;
             })
+            data = this.consolidateData(data, query);
+            return Promise.resolve(data);
           })
-          data = this.consolidateData(data, query);
-          return Promise.resolve(data);
         })
       })
     })
@@ -187,13 +228,13 @@ export class HavenFirestoreQueryService {
     let firebaseRef = null;
     switch (query.scope) {
       case 'yearly':
-        firebaseRef = firebase.firestore().collection('data').doc('haven2017').collection('loads')
+        firebaseRef = firebase.firestore().collection('data').doc('haven2017').collection('loads').doc(query.load).collection('loads')
         break;
       case 'monthly':
-        firebaseRef = firebase.firestore().collection('data').doc('haven2017').collection('loads').where('year', '==', query.year)
+        firebaseRef = firebase.firestore().collection('data').doc('haven2017').collection('loads').doc(query.load).collection('loads').where('year', '==', query.year)
         break
       default:
-        firebaseRef = firebase.firestore().collection('data').doc('haven2017').collection('loads').where('year', '==', query.year).where('month', '==', query.month);
+        firebaseRef = firebase.firestore().collection('data').doc('haven2017').collection('loads').doc(query.load).collection('loads').where('year', '==', query.year).where('month', '==', query.month);
         break;
     }
     return firebaseRef.get().then((querySnapshot) => {
@@ -235,6 +276,34 @@ export class HavenFirestoreQueryService {
       });
       profileData.sort((a, b) => a[0] - b[0]);
     }).then(() => Promise.resolve(profileData));
+  }
+
+  private getFossilSupplyData(query: HavenFirestoreQuery): Promise<any> {
+    const fossilSupplyData = [];
+    let firebaseRef = null;
+    switch (query.scope) {
+      case 'yearly':
+        firebaseRef = firebase.firestore().collection('data').doc('haven2017').collection('scenarios').doc(query.scenario).collection('fossilsupply')
+        break;
+      case 'monthly':
+        firebaseRef = firebase.firestore().collection('data').doc('haven2017').collection('scenarios').doc(query.scenario).collection('fossilsupply').where('year', '==', query.year)
+        break
+      default:
+        firebaseRef = firebase.firestore().collection('data').doc('haven2017').collection('scenarios').doc(query.scenario).collection('fossilsupply').where('year', '==', query.year).where('month', '==', query.month);
+        break;
+    }
+    return firebaseRef.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        doc.data().profiles.forEach(el => {
+          if (this.scopeCheck(el['Time'], query.scope, query.year, query.month, query.day)) {
+            const time = new Date(el['Time']);
+            delete el['Time'];
+            fossilSupplyData.push([time, el]);
+          }
+        })
+      });
+      fossilSupplyData.sort((a, b) => a[0] - b[0]);
+    }).then(() => Promise.resolve(fossilSupplyData));
   }
 
   private consolidateData(data: any, query: any) {
