@@ -201,7 +201,7 @@ export class HavenSidebarPlotlyComponent implements OnInit {
       false,
     )
     newApp.appInfo = { query: firestoreQuery };
-    const newWin = new HavenWindow(newApp, 'Map');
+    const newWin = new HavenWindow(newApp, 'Map', 265, 50, 1050, 900);
     newWin.color = this.colors[this.scenarios.indexOf(this.selScenario)];
     const winId = this.havenWindowService.addWindow(newWin);
     newApp.appInfo['winId'] = winId

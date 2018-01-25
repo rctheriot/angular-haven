@@ -72,8 +72,8 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
           attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         }),
     ],
-    zoom: 10,
-    center: L.latLng([21.440066, -157.999602])
+    zoom: 11,
+    center: L.latLng([21.480066, -157.96])
   };
 
   constructor(
@@ -84,6 +84,7 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
   ) { }
 
   ngOnInit() {
+    this.evMWtotal = 0;
     const title = `${this.appInfo.query.scenario.toUpperCase()} - Map - ${this.appInfo.query.year}`;
     this.havenWindowService.getWindow(this.appInfo.winId).then((window) => window.title = title);
     this.loaded = false;
@@ -154,6 +155,7 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
         this.updateWind();
       }
     })
+
   }
 
   ngOnDestroy() {
@@ -220,7 +222,7 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
   }
 
   loadSolar(layer: any) {
-    this.evMWtotal = EV.values.filter((data) =>  data['Year'] === this.appInfo.query.year  )[0]['EV'];
+
     const layerProps = [];
     for (const lay in layer.layer._layers) {
       const properties = layer.layer._layers[lay].feature.properties;
@@ -230,19 +232,19 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
       layerProps.push([cf, { value: capacity * cf * 8760, options }]);
     }
     layerProps.sort((a, b) => b[0] - a[0]);
-    let total = this.solarMWtotal;
     let evTotal = this.evMWtotal;
-    console.log(total, evTotal)
+    let total = this.solarMWtotal - evTotal;
+
     layerProps.forEach(el => {
       el[1].options.weight = 0;
       if (total > 0) {
         total -= el[1].value;
-        el[1].options.fillColor = 'rgba(245, 140, 99, 1.0)';
+        el[1].options.fillColor = 'rgba(251, 106, 10, 1.0)';
       } else if (evTotal > 0) {
         evTotal -= el[1].value;
-        el[1].options.fillColor = 'rgba(255, 100, 30, 1.0)';
+        el[1].options.fillColor = 'rgba(40, 96, 141, 1.0)';
       }else {
-        el[1].options.fillColor = 'rgba(253, 222, 206, 1.0)'
+        el[1].options.fillColor = 'rgba(240, 170, 125, 1.0)';
       }
     })
     if (this.solarEnabled) { this.map.addLayer(layer.layer); }
@@ -276,6 +278,7 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
   updateSolar() {
     this.fsQueryService.getSolarYearlyMW(this.appInfo.query).then((total) => {
       this.solarMWtotal = total;
+      if (this.evMWtotal !== 0) { this.evMWtotal = EV.values.filter((data) =>  data['Year'] === this.appInfo.query.year  )[0]['EV']; }
       this.layers.forEach(el => {
         if (el.name === 'Solar') {
           this.map.removeLayer(el.layer);
@@ -297,7 +300,17 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
     })
   }
 
-  updateQuery() {
-
+  evToggle(event) {
+    if (event.checked) {
+      this.evMWtotal = EV.values.filter((data) =>  data['Year'] === this.appInfo.query.year  )[0]['EV'];
+    } else {
+      this.evMWtotal = 0;
+    }
+    this.layers.forEach(el => {
+      if (el.name === 'Solar') {
+        this.map.removeLayer(el.layer);
+        this.loadSolar(el);
+      }
+    });
   }
 }
