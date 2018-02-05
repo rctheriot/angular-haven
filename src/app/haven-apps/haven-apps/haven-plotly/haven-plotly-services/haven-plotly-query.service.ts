@@ -24,10 +24,11 @@ export class HavenPlotlyQueryService {
   private dbRef;
 
   public plotlyColors = {
-    'Fossil': '#e6ab02',
+    'Fossil': '#de4c4c',
     'BioFuel': '#a6761d',
     'Biomass': '#66a61e',
-    'Solar': '#F99157',
+    'Solar': '#e48814',
+    'DGPV': '#e0cf52',
     'Wind': '#7570b3',
     'Offshore Wind': '#1b9e77',
     'Load': '#666666',
@@ -50,6 +51,10 @@ export class HavenPlotlyQueryService {
         return this.getSupply(query);
       case 'netload':
         return this.getNetLoad(query);
+      case 'netload-daily':
+        return this.getNetLoadDaily(query);
+      case 'netload-3d':
+        return this.getNetLoad3D(query);
     }
   }
 
@@ -85,6 +90,26 @@ export class HavenPlotlyQueryService {
 
   private getNetLoad(query: PlotlyQuery): Promise<PlotlyData> {
     return this.fsQueryService.getNetLoad(query.firestoreQuery).then(supplyData => {
+      const plotlyData = new PlotlyData();
+      plotlyData.data = supplyData;
+      plotlyData.xAxisLabel = 'Time';
+      plotlyData.yAxisLabel = 'Netload MWh';
+      return Promise.resolve(plotlyData);
+    })
+  }
+
+  private getNetLoadDaily(query: PlotlyQuery): Promise<PlotlyData> {
+    return this.fsQueryService.getNetLoadDaily(query.firestoreQuery).then(supplyData => {
+      const plotlyData = new PlotlyData();
+      plotlyData.data = supplyData;
+      plotlyData.xAxisLabel = 'Time';
+      plotlyData.yAxisLabel = 'Netload MWh';
+      return Promise.resolve(plotlyData);
+    })
+  }
+
+  private getNetLoad3D(query: PlotlyQuery): Promise<PlotlyData> {
+    return this.fsQueryService.getNetLoad3D(query.firestoreQuery).then(supplyData => {
       const plotlyData = new PlotlyData();
       plotlyData.data = supplyData;
       plotlyData.xAxisLabel = 'Time';

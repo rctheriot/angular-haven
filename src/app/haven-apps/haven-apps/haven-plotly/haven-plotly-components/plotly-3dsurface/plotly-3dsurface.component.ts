@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs/Rx'
 
-import { PlotlyRange } from '../../haven-plotly-shared/plotlyRange';
+import { PlotlyRange } from '../../haven-plotly-shared/haven-range';
 import { PlotlyData } from '../../haven-plotly-shared/plotlyData';
 
 import { HavenPlotlyQueryService } from '../../haven-plotly-services/haven-plotly-query.service';
@@ -58,12 +58,13 @@ export class Plotly3dsurfaceComponent implements HavenAppInterface, OnInit, OnDe
       this.plotlyData.data = [{
         z: this.formatData(this.plotlyData.data),
         type: 'surface',
-        colorscale: 'Portland'
+        colorscale: 'Portland',
+        zmin: 0,
+        zmax: Math.max(...[].concat(...this.formatData(this.plotlyData.data))),
       }];
       this.createChart();
     })
   }
-
 
   formatData(data: any): any {
     const zData = [];

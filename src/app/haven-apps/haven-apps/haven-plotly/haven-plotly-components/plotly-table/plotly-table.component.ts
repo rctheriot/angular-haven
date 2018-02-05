@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, SimpleChanges, SimpleChange, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs/Rx'
 
-import { PlotlyRange } from '../../haven-plotly-shared/plotlyRange';
+import { PlotlyRange } from '../../haven-plotly-shared/haven-range';
 import { PlotlyData } from '../../haven-plotly-shared/plotlyData';
 import { PlotlyQuery } from '../../haven-plotly-shared/plotlyQuery';
 
@@ -25,14 +25,15 @@ export class PlotlyTableComponent implements HavenAppInterface, OnInit, OnDestro
   rangeId: number;
 
   public headerColors = {
-    'Fossil': '#d95f02',
+    'Fossil': '#de4c4c',
     'BioFuel': '#a6761d',
     'Biomass': '#66a61e',
-    'Solar': '#e6ab02',
+    'Solar': '#e48814',
+    'DGPV': '#e0cf52',
     'Wind': '#7570b3',
     'Offshore Wind': '#1b9e77',
     'Load': '#666666',
-  };
+  }
 
   @ViewChild('chart') chartDiv: ElementRef;
   loaded = false;

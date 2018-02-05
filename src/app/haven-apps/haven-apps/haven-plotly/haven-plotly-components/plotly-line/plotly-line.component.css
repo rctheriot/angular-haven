@@ -10,3 +10,8 @@
     width: 100px;
     height: 100px;
 }
+
+.navbarButton.mat-mini-fab {
+  top: 5px;
+  position: absolute;
+}

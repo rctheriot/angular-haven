@@ -93,7 +93,11 @@ export class HavenSidebarPlotlyComponent implements OnInit {
         {
           name: 'Hourly',
           charts: ['Line', 'Bar', 'Heatmap']
-        }
+        },
+        {
+          name: '8760',
+          charts: ['3DSurface']
+        },
       ],
     },
     {
@@ -260,6 +264,8 @@ export class HavenSidebarPlotlyComponent implements OnInit {
         return `${this.selScenario.toUpperCase()} ${this.selOption.valueType} - ${this.titleMonth()} ${this.selYear}`;
       case 'Hourly':
         return `${this.selScenario.toUpperCase()} ${this.selOption.valueType} - ${this.titleMonth()} ${this.titleDay()}, ${this.selYear}`;
+      case '8760':
+        return `${this.selScenario.toUpperCase()} ${this.selOption.valueType} - ${this.selYear}`;
       default:
         return `${this.selScenario.toUpperCase()} ${this.selOption.valueType}`;
     }

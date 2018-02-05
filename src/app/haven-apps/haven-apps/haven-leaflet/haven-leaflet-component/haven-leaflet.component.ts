@@ -54,6 +54,19 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
 
   layers = [];
 
+  mapState = {
+    'Solar': false,
+    'DOD': false,
+    'Existing RE': false,
+    'Wind': false,
+    'State Parks': false,
+    'Agricultural': false,
+    'Land Use': false,
+    latitude: 21.480066,
+    longitude: -157.96,
+    zoom: 11,
+  }
+
   solarMWtotal: number;
   solarEnabled: boolean;
   windMWtotal: number;
@@ -83,8 +96,11 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
     private havenWindowService: HavenWindowService
   ) { }
 
+
+
   ngOnInit() {
     this.evMWtotal = 0;
+
     const title = `${this.appInfo.query.scenario.toUpperCase()} - Map - ${this.appInfo.query.year}`;
     this.havenWindowService.getWindow(this.appInfo.winId).then((window) => window.title = title);
     this.loaded = false;
@@ -139,6 +155,7 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
         this.fsQueryService.getWindYearlyMW(this.appInfo.query).then((total) => {
           this.windMWtotal = total;
           this.loaded = true;
+          this.mapStateCheck();
         })
       })
     });
@@ -170,7 +187,47 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
   }
   setMap(map: L.Map) {
     this.map = map;
+    this.mapToggleStateCheck();
+    this.map.on('zoomend', () => this.zoomEnd());
+    this.map.on('moveend', () => this.moveEnd());
   }
+
+  zoomEnd() {
+    this.mapState.zoom = this.map.getZoom();
+  }
+
+  moveEnd() {
+    this.mapState.latitude = this.map.getCenter().lat;
+    this.mapState.longitude = this.map.getCenter().lng;
+  }
+
+  mapStateCheck() {
+    if (this.appInfo.mapState === undefined) {
+      this.appInfo.mapState = this.mapState;
+    } else {
+      this.mapState = this.appInfo.mapState;
+    }
+    this.options.zoom = this.mapState.zoom;
+    this.options.center = L.latLng([this.mapState.latitude, this.mapState.longitude]);
+  }
+
+  mapToggleStateCheck() {
+    for (const toggle in this.mapState) {
+      if (this.mapState.hasOwnProperty(toggle)) {
+        if (typeof this.mapState[toggle] === 'boolean') {
+          if (this.mapState[toggle]) {
+            const event = {}
+            event['checked'] = true;
+            event['source'] = {}
+            event['source']['name'] = toggle;
+            this.toggleLayer(event);
+          }
+        }
+      }
+    }
+  }
+
+
   resize() {
     if (this.loaded) {
       this.map.invalidateSize();
@@ -182,6 +239,7 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
   }
 
   toggleLayer(event) {
+    this.mapState[event.source.name] = event.checked;
     if (event.source.name === 'Solar') { this.solarEnabled = event.checked; }
     if (event.source.name === 'Wind') { this.windEnabled = event.checked; }
     if (event.checked) {
@@ -234,7 +292,6 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
     layerProps.sort((a, b) => b[0] - a[0]);
     let evTotal = this.evMWtotal;
     let total = this.solarMWtotal - evTotal;
-
     layerProps.forEach(el => {
       el[1].options.weight = 0;
       if (total > 0) {
@@ -243,7 +300,7 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
       } else if (evTotal > 0) {
         evTotal -= el[1].value;
         el[1].options.fillColor = 'rgba(40, 96, 141, 1.0)';
-      }else {
+      } else {
         el[1].options.fillColor = 'rgba(240, 170, 125, 1.0)';
       }
     })
@@ -255,21 +312,22 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
     for (const lay in layer.layer._layers) {
       const properties = layer.layer._layers[lay].feature.properties;
       const options = layer.layer._layers[lay].options;
-      const mwac = properties['MWac'];
+      const mwac = properties['MWac2'];
       const sqkm = properties['SQKM'];
-      const spdcls = Number(properties['SPD_CLS'].split('-')[0]);
+      let spdcls = Number(properties['SPD_CLS2'].split('-')[0]);
+      if (isNaN(spdcls)) { spdcls = 8.5; }
       const cf = 0.2283942;
-      layerProps.push([spdcls, sqkm, { value: mwac * cf * 8760, options }]);
+      layerProps.push([spdcls, { value: mwac * cf * 8760, options }]);
     }
-    layerProps.sort((a, b) => b[0] - a[0] || b[1] - a[1]);
+    layerProps.sort((a, b) => b[0] - a[0]);
     let total = this.windMWtotal;
     layerProps.forEach(el => {
-      total -= el[2].value;
-      el[2].options.weight = 0;
+      total -= el[1].value;
+      el[1].options.weight = 0;
       if (total > 0) {
-        el[2].options.fillColor = 'rgba(197, 148, 197, 1.0)';
+        el[1].options.fillColor = 'rgba(197, 148, 197, 1.0)';
       } else {
-        el[2].options.fillColor = 'rgba(227, 212, 227, 1.0)';
+        el[1].options.fillColor = 'rgba(227, 212, 227, 1.0)';
       }
     })
     if (this.windEnabled) { this.map.addLayer(layer.layer); }
@@ -278,7 +336,7 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
   updateSolar() {
     this.fsQueryService.getSolarYearlyMW(this.appInfo.query).then((total) => {
       this.solarMWtotal = total;
-      if (this.evMWtotal !== 0) { this.evMWtotal = EV.values.filter((data) =>  data['Year'] === this.appInfo.query.year  )[0]['EV']; }
+      if (this.evMWtotal !== 0) { this.evMWtotal = EV.values.filter((data) => data['Year'] === this.appInfo.query.year)[0]['EV']; }
       this.layers.forEach(el => {
         if (el.name === 'Solar') {
           this.map.removeLayer(el.layer);
@@ -302,7 +360,7 @@ export class HavenLeafletComponent implements HavenAppInterface, OnInit, OnDestr
 
   evToggle(event) {
     if (event.checked) {
-      this.evMWtotal = EV.values.filter((data) =>  data['Year'] === this.appInfo.query.year  )[0]['EV'];
+      this.evMWtotal = EV.values.filter((data) => data['Year'] === this.appInfo.query.year)[0]['EV'];
     } else {
       this.evMWtotal = 0;
     }

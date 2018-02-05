@@ -1,13 +1,16 @@
 import { Component, OnInit, OnDestroy, SimpleChanges, SimpleChange, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs/Rx'
 
-import { PlotlyRange } from '../../haven-plotly-shared/plotlyRange';
+import { PlotlyRange } from '../../haven-plotly-shared/haven-range';
 import { PlotlyData } from '../../haven-plotly-shared/plotlyData';
+import { PlotlyQuery } from '../../haven-plotly-shared/plotlyQuery';
 
 import { HavenPlotlyQueryService } from '../../haven-plotly-services/haven-plotly-query.service';
 import { HavenDateSelectorService } from '../../../../../haven-shared/haven-services/haven-date-selector.service';
+import { HavenPlotlyRangeService } from '../../haven-plotly-services/haven-plotly-range.service';
 
 import { HavenAppInterface } from '../../../../haven-apps-shared/haven-app-interface';
+import { isUndefined } from 'util';
 
 @Component({
   selector: 'app-plotly-bar',
@@ -25,9 +28,14 @@ export class PlotlyBarComponent implements HavenAppInterface, OnInit, OnDestroy 
 
   dateSelSub: any;
 
+  rangeSub: any;
+  rangeName: string;
+  plotlyRange: any;
+
   constructor(
     private changeDetector: ChangeDetectorRef,
     private havenPlotlyQueryService: HavenPlotlyQueryService,
+    private havenPlotlyRangeService: HavenPlotlyRangeService,
     private havenDateSelectorService: HavenDateSelectorService) { }
 
   ngOnInit() {
@@ -46,6 +54,8 @@ export class PlotlyBarComponent implements HavenAppInterface, OnInit, OnDestroy 
 
   ngOnDestroy() {
     this.dateSelSub.unsubscribe();
+    this.havenPlotlyRangeService.removeRange(this.rangeName, this.plotlyRange.id);
+    this.rangeSub.unsubscribe();
   }
 
   getData() {
@@ -58,6 +68,8 @@ export class PlotlyBarComponent implements HavenAppInterface, OnInit, OnDestroy 
 
   formatData(data: any): PlotlyBarTrace[] {
     const newData = [];
+    const xRange = [];
+    const yRange = [];
     for (const element in data) {
       const x = element;
       for (const innerElement in data[element]) {
@@ -71,6 +83,16 @@ export class PlotlyBarComponent implements HavenAppInterface, OnInit, OnDestroy 
         trace.addDataPoint(x, y);
       }
     }
+    newData.forEach((el) => {
+      for (let i = 0; i < el.y.length; i++) {
+        yRange.push(0);
+      }
+      for (let i = 0; i < el.y.length; i++) {
+        yRange[i] += Number(el.y[i]);
+      }
+    })
+    if (!isUndefined(this.plotlyRange)) { this.havenPlotlyRangeService.removeRange(this.rangeName, this.plotlyRange.id); }
+    this.plotlyRange = new PlotlyRange(null, [0, 0], [Math.min(...yRange), Math.max(...yRange)]);
     return newData;
   }
 
@@ -103,6 +125,16 @@ export class PlotlyBarComponent implements HavenAppInterface, OnInit, OnDestroy 
     }
 
     Plotly.newPlot(this.chartDiv.nativeElement, this.plotlyData.data, layout);
+
+    this.rangeName = this.appInfo.query.firestoreQuery.type + this.appInfo.query.firestoreQuery.scope + 'bar';
+    this.plotlyRange.id = this.havenPlotlyRangeService.addRange(this.rangeName, this.plotlyRange);
+    this.rangeSub = this.havenPlotlyRangeService.getRangeObserver(this.rangeName).subscribe((rangeInfo) => {
+      const update = { 'yaxis.range': rangeInfo.yrange  };
+      if (!isUndefined(this.chartDiv)) {
+        Plotly.relayout(this.chartDiv.nativeElement, update)
+      }
+    })
+    this.havenPlotlyRangeService.updateRange(this.rangeName);
 
   }
 

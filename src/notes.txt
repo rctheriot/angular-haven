@@ -27,3 +27,24 @@ Highlight map the different color
 Map for solar maps will have a percentage that will be a different colors for "EV Cars"
 
 Gonna be given a load shape for each hour and will given a yearly capacity value for each new modifer
+
+
+Jan 25th
+netload instead of supply just show netload for high and low days
+  load - renewable but (netload)
+
+seperate solar 
+  DGPV vs EVERYTHING ELSE
+
+Jan 30th
+  // Net Load 3D Change to netload
+  // DGPV
+  // Bar Chart Scaling
+  Monthly Netload (Only scatter plot, no other charts)
+
+Feb 1st
+  // NetLoad change with slider update
+  Fix Issues with Extra Netload Charts
+  // Load Year Chart that is Hourly
+  // Map Save state 
+  // Netload button to load extra charts instead of automatically creating them

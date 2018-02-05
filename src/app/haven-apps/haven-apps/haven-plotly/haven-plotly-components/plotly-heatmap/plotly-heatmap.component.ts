@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs/Rx'
 
-import { PlotlyRange } from '../../haven-plotly-shared/plotlyRange';
+import { PlotlyRange } from '../../haven-plotly-shared/haven-range';
 import { PlotlyData } from '../../haven-plotly-shared/plotlyData';
 
 import { HavenPlotlyQueryService } from '../../haven-plotly-services/haven-plotly-query.service';

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, Input, ViewChild, Renderer } from '@angular/core';
+import { Component, AfterContentInit, Input, ViewChild, Renderer } from '@angular/core';
 
 import { HavenWindowService } from '../haven-window-services/haven-window.service';
 import { HavenWindow } from '../haven-window-shared/haven-window';
@@ -9,7 +9,7 @@ import { HavenWindow } from '../haven-window-shared/haven-window';
   styleUrls: ['./haven-window.component.css'],
   providers: []
 })
-export class HavenWindowComponent implements AfterViewInit {
+export class HavenWindowComponent implements AfterContentInit {
 
   @ViewChild('windowDiv') windowDiv;
   @ViewChild('titleDiv') titleDiv;
@@ -32,19 +32,19 @@ export class HavenWindowComponent implements AfterViewInit {
 
   constructor(private havenWindowService: HavenWindowService, private _renderer: Renderer) { }
 
-  ngAfterViewInit() {
+  ngAfterContentInit() {
     this.windowLock = this.havenWindow.app.appInfo.windowLock;
     this.windowDiv.nativeElement.style.width = this.havenWindow.size.width + 'px';
     this.windowDiv.nativeElement.style.height = this.havenWindow.size.height + 'px';
     this.windowDiv.nativeElement.style.left = this.havenWindow.position.left + 'px';
     this.windowDiv.nativeElement.style.top = this.havenWindow.position.top + 'px';
     this.titleDiv.nativeElement.style.backgroundColor = this.havenWindow.color;
-    this._renderer.setElementStyle( this.windowDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.havenWindow.backgroundAlpha + ')');
-    this.havenWindowService.WindowZUpdate.subscribe(windows => this.windowDiv.nativeElement.style.zIndex = windows[this.havenWindow.id] );
+    this._renderer.setElementStyle(this.windowDiv.nativeElement, 'background-color', 'rgba(255, 255, 255,' + this.havenWindow.backgroundAlpha + ')');
+    this.havenWindowService.WindowZUpdate.subscribe(windows => this.windowDiv.nativeElement.style.zIndex = windows[this.havenWindow.id]);
     this.bringForward();
   }
 
-  removeWindow() {
+  public removeWindow() {
     this.havenWindowService.removeWindow(this.havenWindow.id);
   }
 
@@ -142,6 +142,11 @@ export class HavenWindowComponent implements AfterViewInit {
   lockWindow() {
     this.havenWindow.app.appInfo.windowLock = !this.havenWindow.app.appInfo.windowLock;
     this.windowLock = this.havenWindow.app.appInfo.windowLock;
+    if (this.havenWindow.app.appInfo.query.firestoreQuery.type === 'netload-daily' || this.havenWindow.app.appInfo.query.firestoreQuery.type === 'netload-3d') {
+      this.havenWindow.app.appInfo.windowLock = true;
+      this.windowLock = this.havenWindow.app.appInfo.windowLock;
+    }
+
   }
 
 }
