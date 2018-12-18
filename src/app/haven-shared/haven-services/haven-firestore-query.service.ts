@@ -249,6 +249,7 @@ export class HavenFirestoreQueryService {
           capacityData.push([year, stations]);
         });
         capacityData.sort((a, b) => a[0] - b[0]);
+        console.log(capacityData);
       }).then(() => Promise.resolve(capacityData));
   }
 

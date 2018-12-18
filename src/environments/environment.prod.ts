@@ -1,11 +1,11 @@
 export const environment = {
   production: true,
   firebase: {
-    apiKey: 'AIzaSyCz1QCypERKfLxB8yHvsr7A3VR2HrVWBWU',
-    authDomain: 'haven-hawaii.firebaseapp.com',
-    databaseURL: 'https://haven-hawaii.firebaseio.com',
-    projectId: 'haven-hawaii',
-    storageBucket: 'haven-hawaii.appspot.com',
-    messagingSenderId: '138707248833'
+    apiKey: 'AIzaSyDOqjET_L6K6-IHUuKxNmb3pDVm_XfDxms',
+    authDomain: 'haven-hawaii-1.firebaseapp.com',
+    databaseURL: 'https://haven-hawaii-1.firebaseio.com',
+    projectId: 'haven-hawaii-1',
+    storageBucket: 'haven-hawaii-1.appspot.com',
+    messagingSenderId: '335053852976'
   }
 };
